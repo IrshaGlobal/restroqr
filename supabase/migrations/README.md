@@ -1,46 +1,65 @@
-# Database Migrations Guide
+# Database Setup Guide
 
-## 📋 How to Set Up Database
+## 🚀 Quick Start - ONE FILE SETUP
 
-### For NEW Supabase Projects (Fresh Install)
+**For NEW Supabase projects, just run ONE file:**
 
-Run this **ONE file** in order:
-
-1. **`001_initial_schema.sql`** - Creates all tables and basic structure
-2. **Then run migrations in numerical order** (002, 003, 004, etc.)
-
-Or use Supabase CLI:
-```bash
-supabase db reset  # Runs all migrations in order
+```
+supabase/master-schema.sql
 ```
 
-### For EXISTING Projects (Updates)
+That's it! This single file contains:
+- ✅ All database tables
+- ✅ All Row Level Security (RLS) policies  
+- ✅ All functions and triggers
+- ✅ Storage bucket configuration
+- ✅ Everything in correct order
 
-Only run migrations that were added after your last update.
-Check the migration dates/timestamps to see what's new.
+### How to Run:
+
+1. Go to [Supabase Dashboard](https://app.supabase.com)
+2. Select your project
+3. Go to **SQL Editor**
+4. Copy entire contents of `supabase/master-schema.sql`
+5. Paste and click **Run**
+6. Done! 🎉
 
 ---
 
-## 📁 Migration Files
+## 📁 File Structure
 
-### Core Schema
-- `001_initial_schema.sql` - Complete database setup (tables, RLS, functions)
+```
+supabase/
+├── master-schema.sql          # ← THE ONLY FILE YOU NEED
+├── migrations/                # ← Historical reference (optional)
+│   ├── 001_initial_schema.sql
+│   ├── 002_add_delivery_support.sql
+│   └── ... (other migration files)
+└── README.md                  # ← This file
+```
 
-### Feature Additions
-- `002_add_customization_support.sql` - Menu item customizations/add-ons
-- `003_add_delivery_support.sql` - Delivery order functionality
-- `004_add_staff_management.sql` - Staff accounts and roles
+**For new projects:** Just use `master-schema.sql`  
+**The migrations folder** is kept for historical reference only.
 
-### Bug Fixes & Improvements
-- `005_fix_rls_policies.sql` - Security policy fixes
-- `006_fix_order_types.sql` - Order type constraint fixes
-- `007_add_staff_display_name.sql` - Staff display name support
+---
 
-### Diagnostic Scripts (NOT migrations - for debugging only)
-- `diagnostic_check_policies.sql` - Check RLS policies
-- `check_restaurant_count.sql` - Verify restaurant data
-- `test_create_staff_user.sql` - Test staff creation
-- `test_display_name.sql` - Test display name functionality
+## 🔄 Updating the Database Schema
+
+When you make changes to your database:
+
+### Option 1: Manual Update (Simple)
+1. Make changes in Supabase Dashboard
+2. Update `master-schema.sql` manually
+3. Commit and push to git
+
+### Option 2: Export from Supabase (Advanced)
+If you have Docker installed:
+```bash
+npm install supabase --save-dev
+npx supabase login
+npx supabase link --project-ref ftuihzoapphxmakufpxf
+npx supabase db dump --linked -f supabase/master-schema.sql
+```
 
 ---
 
