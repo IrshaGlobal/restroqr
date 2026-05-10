@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Search, ShoppingCart, Clock, MapPin, Phone, User, FileText, Loader2, X, ChevronRight, Navigation, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Search, ShoppingCart, Clock, MapPin, Phone, User, FileText, Loader2, X, ChevronRight, Navigation, CheckCircle2, AlertCircle, Plus, Minus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -392,28 +392,31 @@ export default function DeliveryPage() {
   }
   
   return (
-    <div className="min-h-screen bg-[#F5F1EB] pb-24 pt-8 px-6 md:px-8 lg:px-12 relative" style={{
+    <div className="min-h-screen bg-[#F5F1EB] pb-24 relative" style={{
       backgroundImage: 'linear-gradient(#E2DDD5 1px, transparent 1px), linear-gradient(90deg, #E2DDD5 1px, transparent 1px)',
       backgroundSize: '24px 24px',
       backgroundPosition: 'center center'
     }}>
 
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-[#E2DDD5] px-6 py-4 mb-6">
-        <div className="max-w-[960px] mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h1 className="text-2xl font-bold text-[#0A0A0A]" style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic' }}>
+      {/* Header - Clean & Integrated */}
+      <header className="sticky top-0 z-40">
+        <div className="max-w-[960px] mx-auto px-6 py-8">
+          {/* Top Row: Restaurant Info */}
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3 min-w-0">
+              <h1 className="text-2xl font-bold text-[#0A0A0A] truncate" style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic' }}>
                 {restaurant?.name || 'Restaurant'}
               </h1>
-              <Badge variant="outline" className="mt-1 border-[#E2DDD5]">
-                {orderMode === 'takeout' ? 'Takeout Order' : 'Delivery Order'}
+              <Badge variant="outline" className="flex-shrink-0 border-[#E2DDD5] text-xs px-3 py-1">
+                {orderMode === 'takeout' ? 'Takeout' : 'Delivery'}
               </Badge>
             </div>
+            
+            {/* Estimated Time */}
             {deliverySettings && (
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">Est. {orderMode === 'takeout' ? 'Pickup' : 'Delivery'}</p>
-                <p className="text-lg font-bold text-[#C47A3D]">{deliverySettings.estimated_delivery_minutes}-45 min</p>
+              <div className="flex-shrink-0 text-right">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Est.</p>
+                <p className="text-base font-bold text-[#C47A3D]">{deliverySettings.estimated_delivery_minutes} min</p>
               </div>
             )}
           </div>
@@ -422,24 +425,24 @@ export default function DeliveryPage() {
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search our menu..."
+              placeholder="Search menu items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-11 border-[#E2DDD5] bg-white text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] focus:bg-white transition-all"
+              className="pl-11 h-12 text-base border-[#E2DDD5] bg-white text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] focus:bg-white transition-all shadow-sm"
               style={{ borderRadius: 0 }}
             />
           </div>
         </div>
       </header>
 
-      {/* Categories */}
-      <nav className="max-w-[960px] mx-auto flex gap-3 overflow-x-auto pb-6" style={{ scrollbarWidth: 'none' }}>
+      {/* Categories - Larger & More Clickable */}
+      <nav className="max-w-[960px] mx-auto px-6 pb-6 flex gap-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         <button
           onClick={() => setSelectedCategory('all')}
-          className={`flex-shrink-0 h-9 px-3.5 text-xs font-semibold transition-all duration-200 active:scale-95 border flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
+          className={`flex-shrink-0 h-12 px-6 text-sm font-semibold transition-all duration-200 active:scale-95 border-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
             selectedCategory === 'all'
-              ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] border-t-2 border-t-[#C47A3D] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
-              : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]/50 hover:-translate-y-0.5'
+              ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
+              : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]'
           }`}
           style={{ borderRadius: 0 }}
         >
@@ -450,10 +453,10 @@ export default function DeliveryPage() {
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`flex-shrink-0 h-9 px-3.5 text-xs font-semibold transition-all duration-200 active:scale-95 border flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
+            className={`flex-shrink-0 h-12 px-6 text-sm font-semibold transition-all duration-200 active:scale-95 border-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
               selectedCategory === cat.id
-                ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] border-t-2 border-t-[#C47A3D] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
-                : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]/50 hover:-translate-y-0.5'
+                ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
+                : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]'
             }`}
             style={{ borderRadius: 0 }}
           >
@@ -463,7 +466,7 @@ export default function DeliveryPage() {
       </nav>
 
       {/* Menu Items Grid */}
-      <main className="max-w-[960px] mx-auto">
+      <main className="max-w-[960px] mx-auto pb-32">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item, index) => (
             <Card 
