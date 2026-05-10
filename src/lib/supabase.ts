@@ -94,6 +94,7 @@ export const createOrder = async (
   customerInfo?: {
     name?: string
     phone?: string
+    email?: string
     address?: string
     instructions?: string
   },
@@ -183,15 +184,11 @@ export const createOrder = async (
   if (orderType === 'delivery' || orderType === 'takeout') {
     orderData.customer_name = customerInfo?.name || null
     orderData.customer_phone = customerInfo?.phone || null
+    orderData.customer_email = customerInfo?.email || null
     
     if (orderType === 'delivery') {
       orderData.delivery_address = customerInfo?.address || null
-      orderData.delivery_fee = deliveryFee
-      
-      // Set estimated delivery time (30 minutes from now by default)
-      const estimatedTime = new Date()
-      estimatedTime.setMinutes(estimatedTime.getMinutes() + 30)
-      orderData.estimated_delivery_time = estimatedTime.toISOString()
+      orderData.delivery_instructions = customerInfo?.instructions || null
     }
   }
 

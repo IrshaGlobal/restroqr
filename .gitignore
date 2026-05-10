@@ -66,7 +66,7 @@ docs/
 scripts/
 .lingma/
 
-# Keep supabase migrations but ignore other supabase files
+# Keep supabase master-schema.sql but ignore other supabase files
 supabase/.branches/
 supabase/.temp/
 supabase/config.toml

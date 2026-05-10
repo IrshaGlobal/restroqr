@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Search, ShoppingCart, Clock, MapPin, Phone, User, FileText, Loader2, X, ChevronRight, Navigation, CheckCircle2, AlertCircle, Plus, Minus } from 'lucide-react'
+import { Search, ShoppingCart, Clock, MapPin, Phone, User, FileText, Loader2, X, CheckCircle2, AlertCircle, Plus, Minus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
 import { useCartStore } from '@/stores/cart'
 import { supabase, MenuItem, Category, Restaurant, DeliverySettings, createOrder } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
@@ -38,7 +38,6 @@ export default function DeliveryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [showCart, setShowCart] = useState(false)
-  const [activeTab, setActiveTab] = useState<'cart' | 'info' | 'review'>('cart')
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [orderId, setOrderId] = useState<string | null>(null)
   const [orderNumber, setOrderNumber] = useState<string>('')
@@ -55,13 +54,28 @@ export default function DeliveryPage() {
   // Form state
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [deliveryInstructions, setDeliveryInstructions] = useState('')
   const [savedAddresses, setSavedAddresses] = useState<string[]>([])
   const [saveAddress, setSaveAddress] = useState(false)
-  const [gettingLocation, setGettingLocation] = useState(false)
+
   
   const { items, addItem, updateQuantity, getTotal, getItemCount, clearCart, setOrderType, deliveryFee, setDeliveryFee } = useCartStore()
+  
+  // Validation helpers
+  const isValidPhone = (phone: string): boolean => {
+    const digits = phone.replace(/\D/g, '')
+    if (digits.startsWith('0')) {
+      return digits.length === 11
+    }
+    return digits.length === 10
+  }
+  
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
   
   // Set order type based on mode
   useEffect(() => {
@@ -167,29 +181,7 @@ export default function DeliveryPage() {
     addItem(item, customizations)
   }
   
-  // Get current location
-  const handleGetLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser')
-      return
-    }
-    
-    setGettingLocation(true)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords
-        // For now, just show coordinates - in production, use reverse geocoding
-        setDeliveryAddress(`Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}\nPlease enter your full address above`)
-        setGettingLocation(false)
-        toast.success('Location detected! Please verify your address.')
-      },
-      () => {
-        setGettingLocation(false)
-        toast.error('Unable to get your location. Please enter address manually.')
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    )
-  }
+
   
   // Save address to localStorage
   const saveCurrentAddress = () => {
@@ -210,6 +202,17 @@ export default function DeliveryPage() {
     
     if (!customerPhone.trim()) {
       toast.error('Please enter your phone number')
+      return false
+    }
+    
+    if (!isValidPhone(customerPhone)) {
+      toast.error('Phone must be 10 digits (or 11 digits if starting with 0)')
+      return false
+    }
+    
+    // Validate email if provided
+    if (customerEmail.trim() && !isValidEmail(customerEmail)) {
+      toast.error('Please enter a valid email address')
       return false
     }
     
@@ -277,6 +280,7 @@ export default function DeliveryPage() {
         {
           name: customerName,
           phone: customerPhone,
+          email: customerEmail,
           address: orderMode === 'delivery' ? deliveryAddress : undefined,
           instructions: deliveryInstructions
         },
@@ -392,81 +396,99 @@ export default function DeliveryPage() {
   }
   
   return (
-    <div className="min-h-screen bg-[#F5F1EB] pb-24 relative" style={{
+    <div className="min-h-screen bg-[#F5F1EB] pb-24 pt-8 px-6 md:px-8 lg:px-12 relative" style={{
       backgroundImage: 'linear-gradient(#E2DDD5 1px, transparent 1px), linear-gradient(90deg, #E2DDD5 1px, transparent 1px)',
       backgroundSize: '24px 24px',
       backgroundPosition: 'center center'
     }}>
-
-      {/* Header - Clean & Integrated */}
-      <header className="sticky top-0 z-40">
-        <div className="max-w-[960px] mx-auto px-6 py-8">
-          {/* Top Row: Restaurant Info */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3 min-w-0">
-              <h1 className="text-2xl font-bold text-[#0A0A0A] truncate" style={{ fontFamily: 'Playfair Display, serif', fontStyle: 'italic' }}>
-                {restaurant?.name || 'Restaurant'}
-              </h1>
-              <Badge variant="outline" className="flex-shrink-0 border-[#E2DDD5] text-xs px-3 py-1">
-                {orderMode === 'takeout' ? 'Takeout' : 'Delivery'}
-              </Badge>
-            </div>
+      {/* Centered Card Container - Main Content */}
+      <div className="max-w-[960px] mx-auto bg-white border border-[#E2DDD5] shadow-[0_2px_12px_rgba(0,0,0,0.04)] min-h-[80vh] flex flex-col">
+        {/* HEADER - Ultra-Minimal: Search Only */}
+        <header className="sticky top-0 z-40 bg-white border-b border-[#E2DDD5] px-6 py-4">
+          {/* SEARCH - Sharp & Crisp */}
+          <div className="relative w-full group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#8A857B] pointer-events-none" />
+            <Input
+              placeholder="Search dishes, ingredients, or preferences..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-8 h-[44px] text-[14px] bg-white border-[#E2DDD5] focus:border-[#0A0A0A] focus:ring-0 focus:ring-offset-0 transition-all placeholder:text-[#8A857B]" style={{ borderRadius: 0 }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A857B] hover:text-[#0A0A0A] transition-colors p-0.5"
+              >
+                <X className="w-[14px] h-[14px]" />
+              </button>
+            )}
             
-            {/* Estimated Time */}
-            {deliverySettings && (
-              <div className="flex-shrink-0 text-right">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Est.</p>
-                <p className="text-base font-bold text-[#C47A3D]">{deliverySettings.estimated_delivery_minutes} min</p>
+            {/* Search count indicator */}
+            {searchQuery && filteredItems.length > 0 && (
+              <div className="absolute -bottom-5 left-0 text-[10px] text-[#8A857B]">
+                {filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}
               </div>
             )}
           </div>
-          
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search menu items..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 h-12 text-base border-[#E2DDD5] bg-white text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] focus:bg-white transition-all shadow-sm"
-              style={{ borderRadius: 0 }}
-            />
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Categories - Larger & More Clickable */}
-      <nav className="max-w-[960px] mx-auto px-6 pb-6 flex gap-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        <button
-          onClick={() => setSelectedCategory('all')}
-          className={`flex-shrink-0 h-12 px-6 text-sm font-semibold transition-all duration-200 active:scale-95 border-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
-            selectedCategory === 'all'
-              ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
-              : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]'
-          }`}
-          style={{ borderRadius: 0 }}
-        >
-          All
-        </button>
-        
-        {categories.map(cat => (
+        {/* CATEGORIES - Small Sharp Cards */}
+        <nav className="flex gap-3 overflow-x-auto px-6 py-5 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
-            className={`flex-shrink-0 h-12 px-6 text-sm font-semibold transition-all duration-200 active:scale-95 border-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
-              selectedCategory === cat.id
-                ? 'bg-[#0A0A0A] text-white border-[#0A0A0A] shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
-                : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A] hover:bg-[#F5F1EB]'
+            onClick={() => setSelectedCategory('all')}
+            className={`flex-shrink-0 snap-start w-[88px] h-[88px] border flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:-translate-y-[2px] focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
+              selectedCategory === 'all' 
+                ? 'bg-[#0A0A0A] border-[#0A0A0A] text-white hover:border-[#0A0A0A]' 
+                : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A]'
             }`}
-            style={{ borderRadius: 0 }}
           >
-            {cat.name}
+            <span className={selectedCategory === 'all' ? 'text-white opacity-100' : 'text-[#0A0A0A] opacity-80'}>
+              <Search className="w-4 h-4" />
+            </span>
+            <span className={`text-[11px] font-bold tracking-wide uppercase leading-none ${selectedCategory === 'all' ? 'text-white' : 'text-[#0A0A0A]'}`}>All</span>
+            <span className={`text-[10px] ${selectedCategory === 'all' ? 'text-white opacity-100' : 'text-[#0A0A0A] opacity-60'}`}>
+              {menuItems.length}
+            </span>
           </button>
-        ))}
-      </nav>
+          
+          {categories.map(cat => {
+            // Map category names to icons
+            const getCategoryIcon = (name: string) => {
+              const lowerName = name.toLowerCase()
+              if (lowerName.includes('biryani') || lowerName.includes('rice')) return <Search className="w-4 h-4" />
+              if (lowerName.includes('tandoor') || lowerName.includes('grill')) return <Search className="w-4 h-4" />
+              if (lowerName.includes('curry') || lowerName.includes('bowl')) return <Search className="w-4 h-4" />
+              if (lowerName.includes('seafood') || lowerName.includes('fish')) return <Search className="w-4 h-4" />
+              if (lowerName.includes('veg')) return <Search className="w-4 h-4" />
+              return <Search className="w-4 h-4" />
+            }
+            
+            const itemCount = menuItems.filter(item => item.category_id === cat.id).length
+            
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex-shrink-0 snap-start w-[88px] h-[88px] border flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:-translate-y-[2px] focus-visible:ring-2 focus-visible:ring-[#0A0A0A] focus-visible:ring-offset-2 ${
+                  selectedCategory === cat.id 
+                    ? 'bg-[#0A0A0A] border-[#0A0A0A] text-white hover:border-[#0A0A0A]' 
+                    : 'bg-white border-[#E2DDD5] text-[#0A0A0A] hover:border-[#0A0A0A]'
+                }`}
+              >
+                <span className={selectedCategory === cat.id ? 'text-white opacity-100' : 'text-[#0A0A0A] opacity-80'}>
+                  {getCategoryIcon(cat.name)}
+                </span>
+                <span className={`text-[11px] font-bold tracking-wide uppercase leading-none ${selectedCategory === cat.id ? 'text-white' : 'text-[#0A0A0A]'}`}>{cat.name}</span>
+                <span className={`text-[10px] ${selectedCategory === cat.id ? 'text-white opacity-100' : 'text-[#0A0A0A] opacity-60'}`}>
+                  {itemCount}
+                </span>
+              </button>
+            )
+          })}
+        </nav>
 
-      {/* Menu Items Grid */}
-      <main className="max-w-[960px] mx-auto pb-32">
+        {/* Menu Items Grid */}
+        <main className="flex-1 px-6 pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item, index) => (
             <Card 
@@ -546,6 +568,34 @@ export default function DeliveryPage() {
           </div>
         )}
       </main>
+      </div>
+      
+      {/* Blank Space - Shows Background */}
+      <div className="py-8"></div>
+      
+      {/* Footer Card - Separate from Main Card */}
+      <div className="max-w-[960px] mx-auto bg-white border border-[#E2DDD5] shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <footer className="w-full py-0.5 flex-1 flex items-center justify-center">
+        <div className="w-full text-center px-4">
+          <h2 
+            className="font-bold text-[#0A0A0A] leading-none tracking-tight"
+            style={{ 
+              fontFamily: 'Playfair Display, serif',
+              fontSize: 'clamp(1.5rem, 5vw, 8rem)',
+              fontStyle: 'italic',
+              fontWeight: 600
+            }}
+          >
+            {restaurant?.name || 'Restaurant'}
+          </h2>
+          {deliverySettings && (
+            <p className="text-xs text-muted-foreground mt-2">
+              {orderMode === 'takeout' ? 'Takeout' : 'Delivery'} • Est. {deliverySettings.estimated_delivery_minutes} min
+            </p>
+          )}
+        </div>
+      </footer>
+      </div>
       
       {/* Floating Cart Button */}
       {getItemCount() > 0 && !showCart && (
@@ -568,7 +618,7 @@ export default function DeliveryPage() {
         </button>
       )}
       
-      {/* Cart Bottom Sheet with Tabs */}
+      {/* Cart Bottom Sheet - Responsive Single Page */}
       {showCart && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setShowCart(false)}>
           <div 
@@ -581,306 +631,281 @@ export default function DeliveryPage() {
               <div className="w-12 h-1 bg-[#E2DDD5]" />
             </div>
 
-            <div className="flex flex-col" style={{ maxHeight: '90vh' }}>
+            <div className="flex flex-col" style={{ maxHeight: '92vh' }}>
               {/* Header - Sharp & Clean */}
-              <div className="px-6 pb-4 border-b border-[#E2DDD5]">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <h2 className="text-xl font-bold text-[#0A0A0A] tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Your Order</h2>
-                    <p className="text-xs text-muted-foreground mt-1">{getItemCount()} {getItemCount() === 1 ? 'item' : 'items'}</p>
-                  </div>
+              <div className="px-6 pb-4 border-b border-[#E2DDD5] flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-[#0A0A0A] tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Your Order</h2>
                   <Button 
-                    size="icon" 
-                    variant="ghost" 
+                    size="sm"
+                    variant="outline"
                     onClick={() => setShowCart(false)} 
-                    className="min-h-[44px] min-w-[44px] hover:bg-[#F5F1EB] transition-all active:scale-95"
+                    className="min-h-[36px] border-[#E2DDD5] hover:border-[#0A0A0A] text-sm font-medium"
                     style={{ borderRadius: 0 }}
                   >
-                    <X className="w-5 h-5 text-[#0A0A0A]" />
+                    Add more
                   </Button>
                 </div>
-                
-                {/* Clear Cart Button */}
-                {items.length > 0 && (
-                  <button
-                    onClick={() => {
-                      if (confirm('Clear all items from cart?')) {
-                        clearCart()
-                      }
-                    }}
-                    className="text-xs text-muted-foreground hover:text-red-600 transition-colors"
-                  >
-                    Clear All
-                  </button>
-                )}
               </div>
               
-              {/* Tabs */}
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full px-6 pt-4">
-                <TabsList className="grid w-full grid-cols-3 bg-[#F5F1EB]/50 border border-[#E2DDD5]" style={{ borderRadius: 0 }}>
-                  <TabsTrigger value="cart" className="data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white data-[state=active]:border-t-2 data-[state=active]:border-t-[#C47A3D]" style={{ borderRadius: 0 }}>Cart</TabsTrigger>
-                  <TabsTrigger value="info" className="data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white data-[state=active]:border-t-2 data-[state=active]:border-t-[#C47A3D]" style={{ borderRadius: 0 }}>Info</TabsTrigger>
-                  <TabsTrigger value="review" className="data-[state=active]:bg-[#0A0A0A] data-[state=active]:text-white data-[state=active]:border-t-2 data-[state=active]:border-t-[#C47A3D]" style={{ borderRadius: 0 }}>Review</TabsTrigger>
-                </TabsList>
-                  
-                  {/* Tab 1: Cart Items */}
-                  <TabsContent value="cart" className="mt-4">
-                    <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+              {/* Responsive Content - Two Columns on Desktop, Stacked on Mobile */}
+              <div className="flex-1 overflow-y-auto px-6 py-4" style={{ maxHeight: 'calc(92vh - 80px)' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  {/* Left Column - Cart Items & Customer Info (75% on desktop) */}
+                  <div className="lg:col-span-3 space-y-6">
+                    {/* Cart Items Section */}
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-[#0A0A0A] tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                          Cart Items
+                          <span className="ml-2 text-sm font-normal text-muted-foreground">({getItemCount()} {getItemCount() === 1 ? 'item' : 'items'})</span>
+                        </h3>
+                        {items.length > 0 && (
+                          <button
+                            onClick={() => {
+                              if (confirm('Clear all items from cart?')) {
+                                clearCart()
+                              }
+                            }}
+                            className="text-xs text-muted-foreground hover:text-red-600 transition-colors"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
                       {items.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-8 text-muted-foreground border border-[#E2DDD5] bg-white">
                           <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-30" />
                           <p>Your cart is empty</p>
                         </div>
                       ) : (
-                        items.map((cartItem) => (
-                          <div key={cartItem.item.id} className="flex items-center gap-3 p-3 border border-[#E2DDD5] bg-white">
-                            <div className="flex-1">
-                              <p className="font-semibold text-[#0A0A0A]">{cartItem.item.name}</p>
-                              <p className="text-sm text-muted-foreground">{formatCurrency(cartItem.item.price)} x {cartItem.quantity}</p>
+                        <div className="space-y-3">
+                          {items.map((cartItem) => (
+                            <div key={cartItem.item.id} className="flex items-center gap-3 p-4 border border-[#E2DDD5] bg-white">
+                              <div className="flex-1">
+                                <p className="font-semibold text-[#0A0A0A]">{cartItem.item.name}</p>
+                                <p className="text-sm text-muted-foreground">{formatCurrency(cartItem.item.price)} x {cartItem.quantity}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" variant="outline" onClick={() => updateQuantity(cartItem.item.id, cartItem.quantity - 1)} className="min-h-[36px] min-w-[36px] p-0 h-9 w-9 border-[#E2DDD5] hover:border-[#0A0A0A]" style={{ borderRadius: 0 }}>
+                                  <Minus className="w-4 h-4" />
+                                </Button>
+                                <span className="w-8 text-center font-bold text-base">{cartItem.quantity}</span>
+                                <Button size="sm" variant="outline" onClick={() => updateQuantity(cartItem.item.id, cartItem.quantity + 1)} className="min-h-[36px] min-w-[36px] p-0 h-9 w-9 border-[#E2DDD5] hover:border-[#0A0A0A]" style={{ borderRadius: 0 }}>
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Button size="sm" variant="outline" onClick={() => updateQuantity(cartItem.item.id, cartItem.quantity - 1)} className="min-h-[36px] min-w-[36px] p-0 h-9 w-9 border-[#E2DDD5] hover:border-[#0A0A0A]" style={{ borderRadius: 0 }}>
-                                <Minus className="w-4 h-4" />
-                              </Button>
-                              <span className="w-8 text-center font-bold text-base">{cartItem.quantity}</span>
-                              <Button size="sm" variant="outline" onClick={() => updateQuantity(cartItem.item.id, cartItem.quantity + 1)} className="min-h-[36px] min-w-[36px] p-0 h-9 w-9 border-[#E2DDD5] hover:border-[#0A0A0A]" style={{ borderRadius: 0 }}>
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
+                          ))}
+                        </div>
                       )}
                     </div>
                     
-                    {items.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-[#E2DDD5]">
-                        <Button 
-                          className="w-full bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white"
-                          onClick={() => setActiveTab('info')}
-                          style={{ borderRadius: 0 }}
-                        >
-                          Continue to Delivery Info
-                          <ChevronRight className="w-4 h-4 ml-2" />
-                        </Button>
+                    {/* Customer Information Section */}
+                    <div>
+                      <h3 className="text-lg font-bold text-[#0A0A0A] mb-4 tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Customer Information</h3>
+                      <div className="space-y-4 border border-[#E2DDD5] bg-white p-6">
+                        <div>
+                          <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <User className="w-4 h-4" />
+                            Name *
+                          </label>
+                          <Input
+                            value={customerName}
+                            onChange={(e) => setCustomerName(e.target.value)}
+                            placeholder="Your full name"
+                            className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
+                            style={{ borderRadius: 0 }}
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <Phone className="w-4 h-4" />
+                            Phone *
+                          </label>
+                          <Input
+                            value={customerPhone}
+                            onChange={(e) => {
+                              // Only allow numbers, spaces, dashes, plus sign
+                              const value = e.target.value.replace(/[^0-9\s\-\+]/g, '')
+                              setCustomerPhone(value)
+                            }}
+                            placeholder="e.g., 555-123-4567"
+                            type="tel"
+                            pattern="[1-9][0-9]{9}"
+                            className={`bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] ${
+                              customerPhone && !isValidPhone(customerPhone) ? 'border-red-500' : ''
+                            }`}
+                            style={{ borderRadius: 0 }}
+                          />
+                          {customerPhone && !isValidPhone(customerPhone) && (
+                            <p className="text-xs text-red-500 mt-1">Must be 10 digits (or 11 if starting with 0)</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <FileText className="w-4 h-4" />
+                            Email (Optional)
+                          </label>
+                          <Input
+                            value={customerEmail}
+                            onChange={(e) => setCustomerEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            type="email"
+                            className={`bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] ${
+                              customerEmail && !isValidEmail(customerEmail) ? 'border-red-500' : ''
+                            }`}
+                            style={{ borderRadius: 0 }}
+                          />
+                          {customerEmail && !isValidEmail(customerEmail) && (
+                            <p className="text-xs text-red-500 mt-1">Please enter a valid email address</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <MapPin className="w-4 h-4" />
+                            {orderMode === 'takeout' ? 'Pickup Location (Optional)' : 'Delivery Address *'}
+                          </label>
+                          <Textarea
+                            value={deliveryAddress}
+                            onChange={(e) => setDeliveryAddress(e.target.value)}
+                            placeholder={orderMode === 'takeout' ? 'Where will you pick up? (optional)' : 'Enter your full delivery address'}
+                            rows={3}
+                            className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
+                            style={{ borderRadius: 0 }}
+                          />
+                          
+                          {/* Saved Addresses */}
+                          {savedAddresses.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-xs text-muted-foreground mb-2">Saved Addresses:</p>
+                              <div className="space-y-2">
+                                {savedAddresses.map((addr, idx) => (
+                                  <button
+                                    key={idx}
+                                    onClick={() => setDeliveryAddress(addr)}
+                                    className="w-full text-left text-sm p-2 border border-[#E2DDD5] hover:border-[#0A0A0A] bg-white text-[#0A0A0A] transition-colors"
+                                    style={{ borderRadius: 0 }}
+                                  >
+                                    {addr.substring(0, 60)}{addr.length > 60 ? '...' : ''}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="saveAddress"
+                            checked={saveAddress}
+                            onChange={(e) => setSaveAddress(e.target.checked)}
+                            className="w-4 h-4 accent-[#C47A3D]"
+                          />
+                          <label htmlFor="saveAddress" className="text-sm text-muted-foreground">Save this address for next time</label>
+                        </div>
                       </div>
-                    )}
-                  </TabsContent>
+                    </div>
+                  </div>
                   
-                  {/* Tab 2: Delivery Info */}
-                  <TabsContent value="info" className="mt-4 px-6">
-                    <div className="space-y-4 max-h-[50vh] overflow-y-auto">
+                  {/* Right Column - Order Summary (25% on desktop, sticky) */}
+                  <div className="lg:col-span-1">
+                    <div className="lg:sticky lg:top-0 space-y-4">
                       <div>
-                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                          <User className="w-4 h-4" />
-                          Name *
-                        </label>
-                        <Input
-                          value={customerName}
-                          onChange={(e) => setCustomerName(e.target.value)}
-                          placeholder="Your full name"
-                          className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
-                          style={{ borderRadius: 0 }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                          <Phone className="w-4 h-4" />
-                          Phone *
-                        </label>
-                        <Input
-                          value={customerPhone}
-                          onChange={(e) => setCustomerPhone(e.target.value)}
-                          placeholder="Contact number"
-                          type="tel"
-                          className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
-                          style={{ borderRadius: 0 }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                          <MapPin className="w-4 h-4" />
-                          {orderMode === 'takeout' ? 'Pickup Location (Optional)' : 'Delivery Address *'}
-                        </label>
-                        <Textarea
-                          value={deliveryAddress}
-                          onChange={(e) => setDeliveryAddress(e.target.value)}
-                          placeholder={orderMode === 'takeout' ? 'Where will you pick up? (optional)' : 'Enter your full delivery address'}
-                          rows={3}
-                          className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
-                          style={{ borderRadius: 0 }}
-                        />
-                        {orderMode === 'delivery' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="mt-2 w-full border-[#E2DDD5] hover:border-[#0A0A0A]"
-                              onClick={handleGetLocation}
-                              disabled={gettingLocation}
-                              style={{ borderRadius: 0 }}
-                            >
-                              {gettingLocation ? (
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              ) : (
-                                <Navigation className="w-4 h-4 mr-2" />
-                              )}
-                              Use Current Location
-                            </Button>
-                            
-                            {/* Saved Addresses */}
-                            {savedAddresses.length > 0 && (
-                              <div className="mt-3">
-                                <p className="text-xs text-muted-foreground mb-2">Saved Addresses:</p>
-                            <div className="space-y-2">
-                              {savedAddresses.map((addr, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => setDeliveryAddress(addr)}
-                                  className="w-full text-left text-sm p-2 border border-[#E2DDD5] hover:border-[#0A0A0A] bg-white text-[#0A0A0A] transition-colors"
-                                  style={{ borderRadius: 0 }}
-                                >
-                                  {addr.substring(0, 60)}{addr.length > 60 ? '...' : ''}
-                                </button>
-                              ))}
+                        <h3 className="text-lg font-bold text-[#0A0A0A] mb-4 tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Order Summary</h3>
+                        <div className="border border-[#E2DDD5] bg-white p-4 space-y-3">
+                          {/* Items List */}
+                          <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                            {items.map((cartItem) => (
+                              <div key={cartItem.item.id} className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">{cartItem.item.name} x{cartItem.quantity}</span>
+                                <span className="font-semibold text-[#0A0A0A]">{formatCurrency(cartItem.item.price * cartItem.quantity)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Totals */}
+                          <div className="border-t border-[#E2DDD5] pt-3 space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Subtotal</span>
+                              <span className="text-[#0A0A0A]">{formatCurrency(getTotal() - deliveryFee)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Delivery Fee</span>
+                              <span className="text-[#0A0A0A]">{formatCurrency(deliveryFee)}</span>
+                            </div>
+                            {deliverySettings && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Min. Order</span>
+                                <span className="text-[#0A0A0A]">{formatCurrency(deliverySettings.minimum_order_amount)}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-lg font-bold border-t border-[#E2DDD5] pt-2">
+                              <span className="text-[#0A0A0A]">Total</span>
+                              <span className="text-[#C47A3D] text-xl">{formatCurrency(getTotal())}</span>
                             </div>
                           </div>
-                        )}
-                          </>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                          <FileText className="w-4 h-4" />
-                          Delivery Instructions (Optional)
-                        </label>
-                        <Textarea
-                          value={deliveryInstructions}
-                          onChange={(e) => setDeliveryInstructions(e.target.value)}
-                          placeholder="Ring doorbell, leave at door, etc."
-                          rows={2}
-                          className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A]"
-                          style={{ borderRadius: 0 }}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="saveAddress"
-                          checked={saveAddress}
-                          onChange={(e) => setSaveAddress(e.target.checked)}
-                          className="w-4 h-4 accent-[#C47A3D]"
-                        />
-                        <label htmlFor="saveAddress" className="text-sm text-muted-foreground">Save this address for next time</label>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t border-[#E2DDD5] flex gap-3">
-                      <Button variant="outline" className="flex-1 border-[#E2DDD5] hover:border-[#0A0A0A]" onClick={() => setActiveTab('cart')} style={{ borderRadius: 0 }}>
-                        Back
-                      </Button>
-                      <Button 
-                        className="flex-1 bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white"
-                        onClick={() => setActiveTab('review')}
-                        style={{ borderRadius: 0 }}
-                      >
-                        Review Order
-                        <ChevronRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </TabsContent>
-                  
-                  {/* Tab 3: Review */}
-                  <TabsContent value="review" className="mt-4 px-6">
-                    <div className="space-y-4 max-h-[50vh] overflow-y-auto">
-                      {/* Order Summary */}
-                      <div className="space-y-2">
-                        {items.map((cartItem) => (
-                          <div key={cartItem.item.id} className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">{cartItem.item.name} x{cartItem.quantity}</span>
-                            <span className="font-semibold text-[#0A0A0A]">{formatCurrency(cartItem.item.price * cartItem.quantity)}</span>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="border-t border-[#E2DDD5] pt-3 space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Subtotal</span>
-                          <span className="text-[#0A0A0A]">{formatCurrency(getTotal() - deliveryFee)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Delivery Fee</span>
-                          <span className="text-[#0A0A0A]">{formatCurrency(deliveryFee)}</span>
-                        </div>
-                        {deliverySettings && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Min. Order</span>
-                            <span className="text-[#0A0A0A]">{formatCurrency(deliverySettings.minimum_order_amount)}</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between text-lg font-bold border-t border-[#E2DDD5] pt-2">
-                          <span className="text-[#0A0A0A]">Total</span>
-                          <span className="text-[#C47A3D] text-xl">{formatCurrency(getTotal())}</span>
-                        </div>
-                      </div>
-                      
-                      {/* Delivery Info Summary */}
-                      <div className="bg-white border border-[#E2DDD5] p-4 space-y-2" style={{ borderRadius: 0 }}>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase">{orderMode === 'takeout' ? 'Pickup From:' : 'Delivery To:'}</p>
-                        <p className="font-semibold text-[#0A0A0A]">{customerName}</p>
-                        <p className="text-sm text-muted-foreground">{customerPhone}</p>
-                        {orderMode === 'delivery' && <p className="text-sm text-muted-foreground">{deliveryAddress}</p>}
-                        {deliveryInstructions && (
-                          <>
-                            <p className="text-xs font-semibold text-muted-foreground uppercase mt-3">Instructions:</p>
-                            <p className="text-sm text-muted-foreground">{deliveryInstructions}</p>
-                          </>
-                        )}
-                      </div>
-                      
-                      {/* Estimated Time */}
-                      {deliverySettings && (
-                        <div className="flex items-center gap-2 p-3 bg-[#F5F1EB]/50 border border-[#E2DDD5]" style={{ borderRadius: 0 }}>
-                          <Clock className="w-5 h-5 text-[#C47A3D]" />
+                          
+                          {/* Estimated Time */}
+                          {deliverySettings && (
+                            <div className="flex items-center gap-2 p-3 bg-[#F5F1EB]/50 border border-[#E2DDD5]">
+                              <Clock className="w-5 h-5 text-[#C47A3D]" />
+                              <div>
+                                <p className="text-sm font-semibold text-[#0A0A0A]">Estimated {orderMode === 'takeout' ? 'Pickup' : 'Delivery'}</p>
+                                <p className="text-xs text-muted-foreground">{deliverySettings.estimated_delivery_minutes}-45 minutes</p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Special Instructions */}
                           <div>
-                            <p className="text-sm font-semibold text-[#0A0A0A]">Estimated {orderMode === 'takeout' ? 'Pickup' : 'Delivery'}</p>
-                            <p className="text-xs text-muted-foreground">{deliverySettings.estimated_delivery_minutes}-45 minutes</p>
+                            <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                              <FileText className="w-4 h-4" />
+                              Special Instructions (Optional)
+                            </label>
+                            <Textarea
+                              value={deliveryInstructions}
+                              onChange={(e) => setDeliveryInstructions(e.target.value)}
+                              placeholder="Add any special requests or instructions"
+                              rows={2}
+                              className="bg-white border-[#E2DDD5] text-[#0A0A0A] placeholder:text-muted-foreground focus:border-[#0A0A0A] w-full"
+                              style={{ borderRadius: 0 }}
+                            />
                           </div>
+                          
+                          {/* Place Order Button */}
+                          <Button 
+                            className="w-full bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white disabled:opacity-50 mt-4"
+                            onClick={handlePlaceOrder}
+                            disabled={placingOrder || items.length === 0}
+                            style={{ borderRadius: 0 }}
+                          >
+                            {placingOrder ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Placing...
+                              </>
+                            ) : (
+                              <>
+                                Place Order
+                                <CheckCircle2 className="w-4 h-4 ml-2" />
+                              </>
+                            )}
+                          </Button>
                         </div>
-                      )}
+                      </div>
                     </div>
-                    
-                    <div className="mt-4 pt-4 border-t border-[#E2DDD5] flex gap-3">
-                      <Button variant="outline" className="flex-1 border-[#E2DDD5] hover:border-[#0A0A0A]" onClick={() => setActiveTab('info')} style={{ borderRadius: 0 }}>
-                        Back
-                      </Button>
-                      <Button 
-                        className="flex-1 bg-[#0A0A0A] hover:bg-[#1A1A1A] text-white disabled:opacity-50"
-                        onClick={handlePlaceOrder}
-                        disabled={placingOrder || items.length === 0}
-                        style={{ borderRadius: 0 }}
-                      >
-                        {placingOrder ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Placing...
-                          </>
-                        ) : (
-                          <>
-                            Place Order
-                            <CheckCircle2 className="w-4 h-4 ml-2" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
       )}
     </div>
   )
