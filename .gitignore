@@ -37,6 +37,8 @@ Thumbs.db
 *.swp
 *.swo
 *~
+.lingma
+
 
 # Temporary files
 *.tmp
@@ -57,3 +59,14 @@ tests/
 debug-*.js
 check-*.js
 *.tmp.js
+
+# root folders to be ignored
+database-sql/
+docs/
+scripts/
+.lingma/
+
+# Keep supabase migrations but ignore other supabase files
+supabase/.branches/
+supabase/.temp/
+supabase/config.toml
