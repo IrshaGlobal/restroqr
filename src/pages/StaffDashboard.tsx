@@ -10,8 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Skeleton } from '@/components/ui/skeleton'
-import { AnimatedBadge } from '@/components/ui/animated-badge'
 import { supabase, Order, OrderItem, HelpRequest, Table, getStaffInfo, getCurrentUser, signOut } from '@/lib/supabase'
 import { formatCurrency, formatTime } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -392,17 +390,53 @@ export default function StaffDashboard() {
 
   if (loading) {
     return (
-      <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gradient-to-br from-black via-black to-[#00F0FF]/5' : 'bg-gradient-to-br from-slate-50 via-white to-indigo-50/30'}`}>
-        <div className={`sticky top-0 z-40 backdrop-blur-xl border-b px-6 py-4 ${isDark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-slate-200/50'}`}>
-          <Skeleton className={`h-8 w-48 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
-        </div>
-        <div className="px-6 py-6 space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className={`h-32 w-full rounded-2xl ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
-            ))}
-          </div>
-          <Skeleton className={`h-96 w-full rounded-2xl ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+        isDark ? 'bg-[#121010]' : 'bg-[#FAF8F5]'
+      }`}>
+        <div className="text-center space-y-6">
+          {/* Logo Animation */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className={`h-16 w-16 mx-auto flex items-center justify-center rounded-none ${
+              isDark ? 'bg-[#1C1917]' : 'bg-white border border-[#E8E3DC]'
+            }`}
+          >
+            <ChefHat className={`w-8 h-8 ${isDark ? 'text-[#D48A4D]' : 'text-[#B8692E]'}`} />
+          </motion.div>
+          
+          {/* Loading Text */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className={`text-sm uppercase tracking-widest font-semibold ${
+              isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+            }`}>
+              Loading Dashboard
+            </div>
+          </motion.div>
+          
+          {/* Progress Bar */}
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: '100%' }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className={`w-48 h-1 mx-auto rounded-none overflow-hidden ${
+              isDark ? 'bg-[#1C1917]' : 'bg-[#F2EFE9]'
+            }`}
+          >
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '100%' }}
+              transition={{ delay: 0.5, duration: 1.2 }}
+              className={`h-full ${
+                isDark ? 'bg-[#D48A4D]' : 'bg-[#B8692E]'
+              }`}
+            />
+          </motion.div>
         </div>
       </div>
     )
@@ -423,106 +457,141 @@ export default function StaffDashboard() {
 
       {/* Premium Minimalist Header */}
       {!isKitchenMode && (
-        <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${isDark ? 'bg-[#141210]/95 border-[#332F2C]' : 'bg-white/95 border-[#E2DDD5]'}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
-              {/* Left: Logo & Restaurant Name */}
-              <div className="flex items-center gap-4">
+        <header className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${
+          isDark ? 'bg-[#121010]/90 border-[#2E2A28]' : 'bg-white/90 border-[#E8E3DC]'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 sm:h-20">
+              
+              {/* Left: Brand Identity */}
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                {/* QR Code Button - Compact on mobile */}
                 <motion.div 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="relative"
+                  className="flex-shrink-0"
                 >
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={() => setShowTableManagement(true)}
-                    className="h-12 w-12 hover:bg-bg-secondary transition-all"
+                    className={`h-10 w-10 sm:h-12 sm:w-12 rounded-none transition-all ${
+                      isDark ? 'hover:bg-[#1C1917]' : 'hover:bg-[#F2EFE9]'
+                    }`}
                     title="Manage Tables & QR Codes"
                   >
-                    <QrCode className={`w-5 h-5 ${isDark ? 'text-text-primary' : 'text-text-primary'}`} />
+                    <QrCode className="w-5 h-5" />
                   </Button>
                 </motion.div>
                 
+                {/* Restaurant Name - Truncate on mobile */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="hidden sm:block"
+                  className="min-w-0 flex-1"
                 >
-                  <div className={`text-xs uppercase tracking-wider mb-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>STAFF DASHBOARD</div>
-                  <h1 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-text-primary' : 'text-text-primary'}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest mb-0.5 font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    STAFF DASHBOARD
+                  </div>
+                  <h1 className={`text-lg sm:text-2xl font-bold tracking-tight truncate ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                     {restaurantName}
                   </h1>
                 </motion.div>
               </div>
               
-              {/* Right: Action Buttons */}
-              <div className="flex items-center gap-3">
+              {/* Right: Action Group - Stacked on mobile, horizontal on desktop */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                
+                {/* Theme Toggle */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.35 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
                 >
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={toggleTheme}
-                    className="h-12 w-12 hover:bg-bg-secondary transition-all"
+                    className={`h-10 w-10 sm:h-12 sm:w-12 rounded-none transition-all ${
+                      isDark ? 'hover:bg-[#1C1917]' : 'hover:bg-[#F2EFE9]'
+                    }`}
                     title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                   >
-                    {isDark ? <Sun className="w-5 h-5 text-text-primary" /> : <Moon className="w-5 h-5 text-text-primary" />}
+                    {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </Button>
                 </motion.div>
                 
+                {/* Sound Toggle */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.25 }}
                 >
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={() => {
                       setIsMuted(!isMuted)
                       toast.info(isMuted ? 'Sound enabled' : 'Sound muted')
                     }}
-                    className="h-12 w-12 hover:bg-bg-secondary transition-all"
+                    className={`h-10 w-10 sm:h-12 sm:w-12 rounded-none transition-all ${
+                      isDark ? 'hover:bg-[#1C1917]' : 'hover:bg-[#F2EFE9]'
+                    }`}
                     title="Toggle Sound (M)"
                   >
-                    {isMuted ? <VolumeX className={`w-5 h-5 ${isDark ? 'text-text-muted' : 'text-text-muted'}`} /> : <Volume2 className="w-5 h-5 text-accent" />}
+                    {isMuted ? (
+                      <VolumeX className="w-5 h-5 text-[#A09A95]" />
+                    ) : (
+                      <Volume2 className="w-5 h-5 text-[#D48A4D]" />
+                    )}
                   </Button>
                 </motion.div>
                 
+                {/* Kitchen Mode - Primary action, emphasized */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
                 >
                   <Button
-                    variant="default"
-                    size="icon"
                     onClick={toggleKitchenMode}
-                    className="h-12 w-12 bg-accent hover:bg-accent/90 text-white shadow-sm transition-all"
-                    title={isKitchenMode ? 'Exit Kitchen Mode (K)' : 'Enter Kitchen Mode (K) - Fullscreen optimized view'}
+                    className={`h-10 sm:h-12 px-3 sm:px-4 rounded-none font-semibold text-xs sm:text-sm transition-all active:scale-95 ${
+                      isDark 
+                        ? 'bg-[#D48A4D] hover:bg-[#E49A5D] text-white' 
+                        : 'bg-[#B8692E] hover:bg-[#C47A3D] text-white'
+                    }`}
+                    title="Enter Kitchen Mode (K)"
                   >
-                    {isKitchenMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                    <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                    <span className="hidden sm:inline">Kitchen Mode</span>
+                    <span className="sm:hidden">Kitchen</span>
                   </Button>
                 </motion.div>
                 
+                {/* Logout - Subtle on mobile, visible on desktop */}
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.45 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.35 }}
+                  className="hidden sm:block"
                 >
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleLogout}
-                    className="h-12 px-6 font-semibold"
+                    className={`h-12 px-4 rounded-none font-medium text-sm transition-all ${
+                      isDark 
+                        ? 'border-[#2E2A28] hover:border-[#F8F6F4] hover:bg-[#1C1917]' 
+                        : 'border-[#E8E3DC] hover:border-[#1A1816] hover:bg-[#F2EFE9]'
+                    }`}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Logout</span>
+                    Logout
                   </Button>
                 </motion.div>
               </div>
@@ -540,22 +609,32 @@ export default function StaffDashboard() {
         />
       )}
 
-      {/* Help Request Banner */}
+      {/* Help Request Banner - Refined */}
       {!isKitchenMode && helpRequests.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-accent text-white shadow-sm"
+          className={`border-b ${
+            isDark ? 'bg-[#D48A4D]/10 border-[#D48A4D]/30' : 'bg-[#B8692E]/5 border-[#B8692E]/30'
+          }`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 animate-pulse" />
-              <span className="text-sm font-semibold">
+              <div className={`h-8 w-8 flex items-center justify-center rounded-none ${
+                isDark ? 'bg-[#D48A4D]/20' : 'bg-[#B8692E]/20'
+              }`}>
+                <Bell className="w-4 h-4 text-[#D48A4D] animate-pulse" />
+              </div>
+              <span className={`text-xs sm:text-sm font-semibold ${
+                isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+              }`}>
                 {helpRequests.length} table{helpRequests.length > 1 ? 's' : ''} need help
               </span>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {helpRequests.slice(0, 5).map(request => (
-                  <span key={request.id} className="text-xs px-2.5 py-1 bg-white/20 rounded-full font-medium">
+                  <span key={request.id} className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-none font-semibold ${
+                    isDark ? 'bg-[#D48A4D]/20 text-[#D48A4D]' : 'bg-[#B8692E]/20 text-[#B8692E]'
+                  }`}>
                     T{request.tables?.table_number}
                   </span>
                 ))}
@@ -563,7 +642,9 @@ export default function StaffDashboard() {
             </div>
             <button 
               onClick={dismissAllHelpRequests}
-              className="text-sm hover:opacity-80 transition-opacity font-medium underline underline-offset-2"
+              className={`text-xs sm:text-sm font-semibold underline underline-offset-4 transition-opacity hover:opacity-70 ${
+                isDark ? 'text-[#D48A4D]' : 'text-[#B8692E]'
+              }`}
             >
               Dismiss All
             </button>
@@ -571,38 +652,79 @@ export default function StaffDashboard() {
         </motion.div>
       )}
 
-      {/* Kitchen Mode Header */}
+      {/* Kitchen Mode Header - Enhanced */}
       {isKitchenMode && (
-        <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${isDark ? 'bg-[#141210]/95 border-[#332F2C]' : 'bg-white/95 border-[#E2DDD5]'}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
+        <header className={`sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300 ${
+          isDark ? 'bg-[#121010]/95 border-[#2E2A28]' : 'bg-white/95 border-[#E8E3DC]'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 sm:h-20">
+              
+              {/* Left: Kitchen Mode Indicator */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-3 sm:gap-4"
               >
+                <div className={`h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-none ${
+                  isDark ? 'bg-[#D48A4D]/10' : 'bg-[#B8692E]/10'
+                }`}>
+                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-[#D48A4D]" />
+                </div>
                 <div>
-                  <div className={`text-xs uppercase tracking-wider mb-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>KITCHEN MODE ACTIVE</div>
-                  <h1 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-text-primary' : 'text-text-primary'}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest mb-0.5 font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    KITCHEN MODE ACTIVE
+                  </div>
+                  <h1 className={`text-lg sm:text-2xl font-bold tracking-tight ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                     {restaurantName}
                   </h1>
                 </div>
               </motion.div>
               
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => setIsKitchenMode(false)}
-                  className="h-12 w-12 shadow-sm transition-all"
-                  title="Exit Kitchen Mode (K)"
+              {/* Right: Quick Actions & Shortcuts */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                
+                {/* Keyboard Shortcuts Hint - Desktop Only */}
+                <div className={`hidden lg:flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold ${
+                  isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                }`}>
+                  <kbd className={`px-2 py-1 rounded-none font-mono ${
+                    isDark ? 'bg-[#1C1917] border border-[#2E2A28]' : 'bg-[#F2EFE9] border border-[#E8E3DC]'
+                  }`}>M</kbd>
+                  <span>Mute</span>
+                  <kbd className={`px-2 py-1 rounded-none font-mono ml-2 ${
+                    isDark ? 'bg-[#1C1917] border border-[#2E2A28]' : 'bg-[#F2EFE9] border border-[#E8E3DC]'
+                  }`}>K</kbd>
+                  <span>Exit</span>
+                </div>
+                
+                {/* Exit Button */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
                 >
-                  <Minimize2 className="w-5 h-5" />
-                </Button>
-              </motion.div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsKitchenMode(false)}
+                    className={`h-10 sm:h-12 px-3 sm:px-4 rounded-none font-semibold text-xs sm:text-sm transition-all ${
+                      isDark 
+                        ? 'border-[#2E2A28] hover:border-[#F8F6F4] hover:bg-[#1C1917]' 
+                        : 'border-[#E8E3DC] hover:border-[#1A1816] hover:bg-[#F2EFE9]'
+                    }`}
+                    title="Exit Kitchen Mode (K)"
+                  >
+                    <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                    <span className="hidden sm:inline">Exit Kitchen</span>
+                    <span className="sm:hidden">Exit</span>
+                  </Button>
+                </motion.div>
+              </div>
             </div>
           </div>
         </header>
@@ -613,82 +735,131 @@ export default function StaffDashboard() {
         {!isKitchenMode && (
           <>
             {/* Brutalist Data Panels will be here - continuing below */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            
+            {/* New Orders - Emphasized */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
+              className="col-span-2 lg:col-span-1"
             >
-              <Card className={`relative overflow-hidden border transition-colors duration-300 ${isDark ? 'border-[#332F2C] bg-card' : 'border-[#E2DDD5] bg-white'}`}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
-                    <div className={`h-10 w-10 flex items-center justify-center bg-accent/10`}>
-                      <Bell className="w-5 h-5 text-accent" />
+              <Card className={`relative overflow-hidden border rounded-none transition-all duration-200 hover:-translate-y-0.5 ${
+                stats.new > 0 
+                  ? (isDark ? 'border-[#D48A4D]/40 bg-[#D48A4D]/5' : 'border-[#B8692E]/40 bg-[#B8692E]/5')
+                  : (isDark ? 'border-[#2E2A28] bg-[#1C1917]' : 'border-[#E8E3DC] bg-white')
+              }`}>
+                <CardContent className="p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-none ${
+                      isDark ? 'bg-[#D48A4D]/10' : 'bg-[#B8692E]/10'
+                    }`}>
+                      <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-[#D48A4D]" />
                     </div>
-                    <div className="text-right">
-                      <div className={`text-3xl sm:text-4xl font-bold tabular-nums ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{stats.new}</div>
-                      <div className={`text-xs uppercase tracking-wide mt-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>New Orders</div>
-                    </div>
+                    {stats.new > 0 && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="h-2 w-2 rounded-full bg-[#D48A4D] animate-pulse"
+                      />
+                    )}
+                  </div>
+                  <div className={`text-3xl sm:text-4xl font-bold tabular-nums tracking-tight mb-1 ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                    {stats.new}
+                  </div>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    New Orders
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
+            {/* Preparing */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <Card className={`border rounded-none transition-all duration-200 hover:-translate-y-0.5 ${
+                isDark ? 'border-[#2E2A28] bg-[#1C1917]' : 'border-[#E8E3DC] bg-white'
+              }`}>
+                <CardContent className="p-4 sm:p-5">
+                  <div className={`h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-none mb-3 ${
+                    isDark ? 'bg-[#D48A4D]/10' : 'bg-[#B8692E]/10'
+                  }`}>
+                    <ChefHat className="w-4 h-4 sm:w-5 sm:h-5 text-[#D48A4D]" />
+                  </div>
+                  <div className={`text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1 ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                    {stats.preparing}
+                  </div>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    Cooking
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Ready */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className={`relative overflow-hidden border transition-colors duration-300 ${isDark ? 'border-[#332F2C] bg-card' : 'border-[#E2DDD5] bg-white'}`}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
-                    <div className={`h-10 w-10 flex items-center justify-center bg-warning/10`}>
-                      <ChefHat className="w-5 h-5 text-warning" />
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-3xl sm:text-4xl font-bold tabular-nums ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{stats.preparing}</div>
-                      <div className={`text-xs uppercase tracking-wide mt-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>Cooking</div>
-                    </div>
+              <Card className={`border rounded-none transition-all duration-200 hover:-translate-y-0.5 ${
+                isDark ? 'border-[#2E2A28] bg-[#1C1917]' : 'border-[#E8E3DC] bg-white'
+              }`}>
+                <CardContent className="p-4 sm:p-5">
+                  <div className={`h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-none mb-3 ${
+                    isDark ? 'bg-[#3D7A5F]/10' : 'bg-[#2D5A45]/10'
+                  }`}>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#3D7A5F]" />
+                  </div>
+                  <div className={`text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1 ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                    {stats.ready}
+                  </div>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    Ready
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
+            {/* Today Total */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.25 }}
             >
-              <Card className={`relative overflow-hidden border transition-colors duration-300 ${isDark ? 'border-[#332F2C] bg-card' : 'border-[#E2DDD5] bg-white'}`}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
-                    <div className={`h-10 w-10 flex items-center justify-center bg-success/10`}>
-                      <CheckCircle2 className="w-5 h-5 text-success" />
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-3xl sm:text-4xl font-bold tabular-nums ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{stats.ready}</div>
-                      <div className={`text-xs uppercase tracking-wide mt-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>Ready</div>
-                    </div>
+              <Card className={`border rounded-none transition-all duration-200 hover:-translate-y-0.5 ${
+                isDark ? 'border-[#2E2A28] bg-[#1C1917]' : 'border-[#E8E3DC] bg-white'
+              }`}>
+                <CardContent className="p-4 sm:p-5">
+                  <div className={`h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-none mb-3 ${
+                    isDark ? 'bg-[#7A8B9D]/10' : 'bg-[#5A6B7D]/10'
+                  }`}>
+                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-[#7A8B9D]" />
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className={`relative overflow-hidden border transition-colors duration-300 ${isDark ? 'border-[#332F2C] bg-card' : 'border-[#E2DDD5] bg-white'}`}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-start justify-between mb-3 sm:mb-4">
-                    <div className={`h-10 w-10 flex items-center justify-center bg-info/10`}>
-                      <TrendingUp className={`w-5 h-5 ${isDark ? 'text-info' : 'text-info'}`} />
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-3xl sm:text-4xl font-bold tabular-nums ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{stats.total}</div>
-                      <div className={`text-xs uppercase tracking-wide mt-1 font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>Today</div>
-                    </div>
+                  <div className={`text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1 ${
+                    isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                  }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                    {stats.total}
+                  </div>
+                  <div className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold ${
+                    isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                  }`}>
+                    Today
                   </div>
                 </CardContent>
               </Card>
@@ -1082,13 +1253,40 @@ function OrderCard({
   }
 
   const statusActions = {
-    new: { label: 'Start Preparing', nextStatus: 'preparing' as const, icon: <ChefHat className="w-4 h-4" />, color: 'bg-info' },
-    preparing: { label: 'Mark Ready', nextStatus: 'ready' as const, icon: <CheckCircle2 className="w-4 h-4" />, color: 'bg-warning' },
-    ready: { label: 'Mark Delivered', nextStatus: 'delivered' as const, icon: <Truck className="w-4 h-4" />, color: 'bg-success' },
+    new: { 
+      label: 'Start Preparing', 
+      nextStatus: 'preparing' as const, 
+      icon: <ChefHat className="w-4 h-4 sm:w-5 sm:h-5" />, 
+      color: isDark ? 'bg-[#D48A4D]' : 'bg-[#B8692E]' 
+    },
+    preparing: { 
+      label: 'Mark Ready', 
+      nextStatus: 'ready' as const, 
+      icon: <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />, 
+      color: isDark ? 'bg-[#D48A4D]' : 'bg-[#B8692E]' 
+    },
+    ready: { 
+      label: 'Mark Delivered', 
+      nextStatus: 'delivered' as const, 
+      icon: <Truck className="w-4 h-4 sm:w-5 sm:h-5" />, 
+      color: isDark ? 'bg-[#3D7A5F]' : 'bg-[#2D5A45]' 
+    },
     delivered: null,
   }
 
   const action = statusActions[order.status]
+
+  // Status color mapping
+  const getStatusColor = () => {
+    switch(order.status) {
+      case 'new': return isDark ? '#D48A4D' : '#B8692E'
+      case 'preparing': return isDark ? '#D48A4D' : '#B8692E'
+      case 'ready': return isDark ? '#3D7A5F' : '#2D5A45'
+      default: return isDark ? '#7A8B9D' : '#5A6B7D'
+    }
+  }
+
+  const statusColor = getStatusColor()
 
   return (
     <motion.div
@@ -1097,187 +1295,243 @@ function OrderCard({
       transition={{ duration: 0.3, delay: index * 0.05 }}
       layout
     >
-      <Card className={`overflow-hidden border shadow-sm hover:shadow-md transition-all duration-200 rounded-none ${
-        order.order_type === 'delivery' ? (isDark ? 'border-success/30 bg-card' : 'border-success/50 bg-white') : 
-        order.status === 'new' ? (isDark ? 'border-info/30 bg-card' : 'border-info/50 bg-white') :
-        order.status === 'preparing' ? (isDark ? 'border-warning/30 bg-card' : 'border-warning/50 bg-white') :
-        order.status === 'ready' ? (isDark ? 'border-success/30 bg-card' : 'border-success/50 bg-white') :
-        (isDark ? 'border-[#332F2C] bg-card' : 'border-[#E2DDD5] bg-white')
+      <Card className={`overflow-hidden border rounded-none shadow-sm hover:shadow-md transition-all duration-200 group ${
+        order.order_type === 'delivery' 
+          ? (isDark ? 'border-[#3D7A5F]/30 bg-[#1C1917]' : 'border-[#2D5A45]/30 bg-white')
+          : order.status === 'new' 
+          ? (isDark ? 'border-[#D48A4D]/30 bg-[#1C1917]' : 'border-[#B8692E]/30 bg-white')
+          : order.status === 'preparing' 
+          ? (isDark ? 'border-[#D48A4D]/30 bg-[#1C1917]' : 'border-[#B8692E]/30 bg-white')
+          : order.status === 'ready' 
+          ? (isDark ? 'border-[#3D7A5F]/30 bg-[#1C1917]' : 'border-[#2D5A45]/30 bg-white')
+          : (isDark ? 'border-[#2E2A28] bg-[#1C1917]' : 'border-[#E8E3DC] bg-white')
       }`}>
-        {/* Status Gradient Bar */}
-        <div className={`h-1 ${
-          order.status === 'new' ? 'bg-info' :
-          order.status === 'preparing' ? 'bg-warning' :
-          order.status === 'ready' ? 'bg-success' :
-          'bg-text-muted'
-        }`} />
         
-        <CardContent className={`space-y-4 ${kitchenMode ? 'p-6' : 'p-4 sm:p-6'}`}>
-          {/* Header */}
-          <div className="flex items-start justify-between gap-2">
+        {/* Status Indicator Bar - Thicker, more prominent */}
+        <div 
+          className="h-1.5 sm:h-2 transition-all duration-200"
+          style={{ backgroundColor: statusColor }}
+        />
+        
+        <CardContent className={`space-y-4 sm:space-y-5 ${
+          kitchenMode ? 'p-5 sm:p-6' : 'p-4 sm:p-5'
+        }`}>
+          {/* Header Section */}
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
+              
+              {/* Order Number & Time */}
               <div className="flex items-baseline gap-2 sm:gap-3 mb-2 flex-wrap">
-                <h3 className={`font-bold tracking-tight truncate ${kitchenMode ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'} ${isDark ? 'text-text-primary' : 'text-text-primary'}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                  {order.order_number}
+                <h3 className={`font-bold tracking-tight truncate ${
+                  kitchenMode ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'
+                } ${isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'}`} 
+                style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                  #{order.order_number}
                 </h3>
-                <span className={`text-xs sm:text-sm flex items-center gap-1 flex-shrink-0 ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
-                  <Clock className="w-3.5 h-3.5" />
+                <span className={`text-xs flex items-center gap-1 flex-shrink-0 ${
+                  isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                }`}>
+                  <Clock className="w-3 h-3" />
                   {formatTime(new Date(order.created_at))}
                 </span>
               </div>
               
-              {/* Order Type Badge */}
+              {/* Order Type & Table Badges */}
               <div className="flex items-center gap-2 flex-wrap">
                 {order.order_type === 'delivery' && (
-                  <AnimatedBadge variant="success">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider ${
+                    isDark ? 'bg-[#3D7A5F]/10 text-[#3D7A5F]' : 'bg-[#2D5A45]/10 text-[#2D5A45]'
+                  }`}>
                     <Truck className="w-3 h-3 mr-1" />
                     Delivery
-                  </AnimatedBadge>
+                  </span>
                 )}
                 {order.order_type === 'takeout' && (
-                  <AnimatedBadge variant="warning">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider ${
+                    isDark ? 'bg-[#D48A4D]/10 text-[#D48A4D]' : 'bg-[#B8692E]/10 text-[#B8692E]'
+                  }`}>
                     <ShoppingBag className="w-3 h-3 mr-1" />
                     Takeout
-                  </AnimatedBadge>
+                  </span>
                 )}
                 {(order.order_type === 'dinein' || !order.order_type) && (
-                  <AnimatedBadge variant="default">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider ${
+                    isDark ? 'bg-[#7A8B9D]/10 text-[#7A8B9D]' : 'bg-[#5A6B7D]/10 text-[#5A6B7D]'
+                  }`}>
                     <MapPin className="w-3 h-3 mr-1" />
                     Dine-in
-                  </AnimatedBadge>
+                  </span>
                 )}
                 
                 {(order.order_type === 'dinein' || !order.order_type) && order.tables?.table_number && (
-                  <span className={`text-sm font-semibold ml-2 ${isDark ? 'text-text-secondary' : 'text-text-secondary'}`}>
+                  <span className={`text-xs sm:text-sm font-semibold ${
+                    isDark ? 'text-[#D0CCC8]' : 'text-[#6B6560]'
+                  }`}>
                     Table {order.tables.table_number}
                   </span>
                 )}
               </div>
-              
-              {/* Customer Info for Delivery/Takeout */}
-              {(order.order_type === 'delivery' || order.order_type === 'takeout') && (order.customer_name || order.customer_phone || order.delivery_address) && (
-                <div className={`mt-3 p-4 border ${
-                  order.order_type === 'delivery' ? (isDark ? 'bg-success/5 border-success/30' : 'bg-success/5 border-success/50') : (isDark ? 'bg-accent/5 border-accent/30' : 'bg-accent/5 border-accent/50')
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-xs uppercase tracking-wider font-medium ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>Customer Details</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowCustomerInfo(!showCustomerInfo)}
-                      className={`h-6 w-6 p-0 rounded-full ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}
-                      title={showCustomerInfo ? "Hide" : "Show"}
-                    >
-                      {showCustomerInfo ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isDark ? 'text-white/70' : 'text-slate-600'}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isDark ? 'text-white/70' : 'text-slate-600'}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                      )}
-                    </Button>
-                  </div>
-                  {showCustomerInfo && (
-                    <div className="space-y-2">
-                      {order.customer_name && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <User className={`w-4 h-4 ${isDark ? 'text-text-muted' : 'text-text-muted'}`} />
-                          <span className={`font-semibold ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{order.customer_name}</span>
-                        </div>
-                      )}
-                      {order.customer_phone && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Bell className={`w-4 h-4 ${isDark ? 'text-text-muted' : 'text-text-muted'}`} />
-                          <span className={isDark ? 'text-text-secondary' : 'text-text-secondary'}>{order.customer_phone}</span>
-                        </div>
-                      )}
-                      {order.order_type === 'delivery' && order.delivery_address && (
-                        <div className="flex items-start gap-2 text-sm pt-1">
-                          <MapPin className={`w-4 h-4 ${isDark ? 'text-text-muted' : 'text-text-muted'} mt-0.5 flex-shrink-0`} />
-                          <span className={`leading-relaxed ${isDark ? 'text-text-secondary' : 'text-text-secondary'}`}>{order.delivery_address}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {!showCustomerInfo && (
-                    <div className={`text-xs text-center py-2 italic ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
-                      Click eye icon to reveal customer details
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
             
-            {/* Status Badge & Print Button */}
-            <div className="flex items-center gap-2">
-              <AnimatedBadge 
-                variant={
-                  order.status === 'new' ? 'info' :
-                  order.status === 'preparing' ? 'warning' :
-                  order.status === 'ready' ? 'success' : 'default'
-                }
-              >
+            {/* Status Badge & Print */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-none text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
+                order.status === 'new' 
+                  ? (isDark ? 'bg-[#D48A4D]/10 text-[#D48A4D]' : 'bg-[#B8692E]/10 text-[#B8692E]')
+                  : order.status === 'preparing'
+                  ? (isDark ? 'bg-[#D48A4D]/10 text-[#D48A4D]' : 'bg-[#B8692E]/10 text-[#B8692E]')
+                  : order.status === 'ready'
+                  ? (isDark ? 'bg-[#3D7A5F]/10 text-[#3D7A5F]' : 'bg-[#2D5A45]/10 text-[#2D5A45]')
+                  : (isDark ? 'bg-[#242020] text-[#A09A95]' : 'bg-[#F2EFE9] text-[#9B9590]')
+              }`}>
                 {order.status}
-              </AnimatedBadge>
+              </span>
               
               {!kitchenMode && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handlePrint}
-                  className={`h-8 w-8 p-0 rounded-none transition-colors ${isDark ? 'hover:bg-bg-secondary' : 'hover:bg-bg-secondary'}`}
+                  className={`h-8 w-8 p-0 rounded-none transition-colors ${
+                    isDark ? 'hover:bg-[#242020]' : 'hover:bg-[#F2EFE9]'
+                  }`}
                   title="Print Receipt"
                 >
-                  <Printer className={`w-4 h-4 transition-colors ${isDark ? 'text-text-secondary hover:text-text-primary' : 'text-text-secondary hover:text-text-primary'}`} />
+                  <Printer className={`w-4 h-4 ${
+                    isDark ? 'text-[#D0CCC8] hover:text-[#F8F6F4]' : 'text-[#6B6560] hover:text-[#1A1816]'
+                  }`} />
                 </Button>
               )}
             </div>
           </div>
 
-          {/* Total */}
-          <div className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-text-primary' : 'text-text-primary'}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+          {/* Total Amount - Prominent */}
+          <div className={`text-xl sm:text-2xl font-bold tracking-tight ${
+            isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+          }`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
             {formatCurrency(order.total)}
           </div>
 
           {/* Divider */}
-          <div className={`border-t ${isDark ? 'border-[#332F2C]' : 'border-[#E2DDD5]'}`} />
+          <div className={`border-t ${isDark ? 'border-[#2E2A28]' : 'border-[#E8E3DC]'}`} />
 
-          {/* Order Items */}
-          <div className="space-y-2">
+          {/* Customer Info Section - Redesigned */}
+          {(order.order_type === 'delivery' || order.order_type === 'takeout') && 
+           (order.customer_name || order.customer_phone || order.delivery_address) && (
+            <div className={`rounded-none border transition-all duration-200 ${
+              order.order_type === 'delivery' 
+                ? (isDark ? 'bg-[#3D7A5F]/5 border-[#3D7A5F]/20' : 'bg-[#2D5A45]/5 border-[#2D5A45]/20')
+                : (isDark ? 'bg-[#D48A4D]/5 border-[#D48A4D]/20' : 'bg-[#B8692E]/5 border-[#B8692E]/20')
+            }`}>
+              <button
+                onClick={() => setShowCustomerInfo(!showCustomerInfo)}
+                className="w-full p-3 sm:p-4 flex items-center justify-between text-left"
+              >
+                <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-semibold ${
+                  isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                }`}>
+                  Customer Details
+                </span>
+                <div className={`transition-transform duration-200 ${showCustomerInfo ? 'rotate-180' : ''}`}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isDark ? 'text-[#D0CCC8]' : 'text-[#6B6560]'}>
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </div>
+              </button>
+              
+              <AnimatePresence>
+                {showCustomerInfo && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-2">
+                      {order.customer_name && (
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                          <User className={`w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 ${
+                            isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                          }`} />
+                          <span className={`font-semibold ${
+                            isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+                          }`}>{order.customer_name}</span>
+                        </div>
+                      )}
+                      {order.customer_phone && (
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                          <Bell className={`w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 ${
+                            isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                          }`} />
+                          <a href={`tel:${order.customer_phone}`} className={`hover:underline ${
+                            isDark ? 'text-[#D0CCC8]' : 'text-[#6B6560]'
+                          }`}>{order.customer_phone}</a>
+                        </div>
+                      )}
+                      {order.order_type === 'delivery' && order.delivery_address && (
+                        <div className="flex items-start gap-2 text-xs sm:text-sm pt-1">
+                          <MapPin className={`w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5 ${
+                            isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+                          }`} />
+                          <span className={`leading-relaxed ${
+                            isDark ? 'text-[#D0CCC8]' : 'text-[#6B6560]'
+                          }`}>{order.delivery_address}</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+          {/* Order Items List - Enhanced */}
+          <div className="space-y-1.5 sm:space-y-2">
             {order.items && order.items.length > 0 ? (
               order.items.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between py-1.5">
+                <div key={idx} className="flex items-center justify-between py-1.5 sm:py-2">
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <span className={`font-bold flex-shrink-0 ${kitchenMode ? 'text-xl sm:text-2xl w-10 sm:w-12' : 'text-lg sm:text-xl w-8 sm:w-10'} text-accent`}>
+                    <span className={`font-bold flex-shrink-0 ${
+                      kitchenMode ? 'text-lg sm:text-xl w-10 sm:w-12' : 'text-base sm:text-lg w-8 sm:w-10'
+                    }`} style={{ color: statusColor }}>
                       {item.quantity}×
                     </span>
-                    <span className={`font-medium truncate ${kitchenMode ? 'text-base sm:text-lg' : 'text-sm sm:text-base'} ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>
+                    <span className={`font-medium truncate ${
+                      kitchenMode ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
+                    } ${isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'}`}>
                       {item.menu_items?.name || 'Unknown Item'}
                     </span>
                   </div>
                 </div>
               ))
             ) : (
-              <div className={`text-xs text-center py-2 italic ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
+              <div className={`text-xs text-center py-2 italic ${
+                isDark ? 'text-[#A09A95]' : 'text-[#9B9590]'
+              }`}>
                 No items in this order
               </div>
             )}
           </div>
 
-          {/* Special Instructions */}
+          {/* Special Instructions - Highlighted */}
           {order.notes && (
-            <div className={`border-l-4 p-3 ${isDark ? 'bg-accent/10 border-accent' : 'bg-accent/5 border-accent'}`}>
-              <p className={`text-sm ${isDark ? 'text-text-primary' : 'text-text-primary'}`}>{order.notes}</p>
+            <div className={`border-l-2 p-3 sm:p-4 rounded-none ${
+              isDark ? 'bg-[#D48A4D]/5 border-[#D48A4D]' : 'bg-[#B8692E]/5 border-[#B8692E]'
+            }`}>
+              <p className={`text-xs sm:text-sm font-medium ${
+                isDark ? 'text-[#F8F6F4]' : 'text-[#1A1816]'
+              }`}>{order.notes}</p>
             </div>
           )}
 
-          {/* Action Button */}
+          {/* Action Button - Prominent */}
           {action && (
             <Button
               size="lg"
-              className={`w-full ${kitchenMode ? 'h-14 sm:h-16 text-sm sm:text-base' : 'h-12 sm:h-14 text-xs sm:text-sm'} font-bold uppercase tracking-wide transition-all active:scale-[0.98] rounded-none shadow-sm ${
-                order.status === 'new' ? 'bg-info hover:bg-info/90 text-white' :
-                order.status === 'preparing' ? 'bg-warning hover:bg-warning/90 text-white' :
-                'bg-success hover:bg-success/90 text-white'
-              }`}
+              className={`w-full ${
+                kitchenMode ? 'h-12 sm:h-14 text-xs sm:text-sm' : 'h-11 sm:h-12 text-xs sm:text-sm'
+              } font-bold uppercase tracking-wider transition-all active:scale-[0.98] rounded-none shadow-sm`}
+              style={{ backgroundColor: action.color }}
               onClick={() => onUpdateStatus(order.id, action.nextStatus)}
               disabled={updating}
             >

@@ -9,28 +9,28 @@
    ============================================ */
 :root {
   /* Background Colors - Warm, inviting neutrals */
-  --color-bg-primary: #F5F1EB;      /* Warm cream background */
-  --color-bg-secondary: #F0EDE8;    /* Slightly darker cream */
+  --color-bg-primary: #FAF8F5;      /* Warmer, lighter cream */
+  --color-bg-secondary: #F2EFE9;    /* Subtle depth */
   --color-surface: #FFFFFF;          /* Pure white cards/surfaces */
   
   /* Text Colors - High contrast hierarchy */
-  --color-text-primary: #0A0A0A;     /* Deep black for primary text */
-  --color-text-secondary: #5A554B;   /* Warm gray for secondary */
-  --color-text-muted: #8A857B;       /* Muted gray for hints/labels */
+  --color-text-primary: #1A1816;     /* Softer than pure black */
+  --color-text-secondary: #6B6560;   /* Warm mid-gray */
+  --color-text-muted: #9B9590;       /* Refined muted tone */
   
   /* Border Colors - Subtle definition */
-  --color-border: #E2DDD5;           /* Warm light gray border */
-  --color-border-hover: #0A0A0A;     /* Black on hover for emphasis */
+  --color-border: #E8E3DC;           /* Softer border */
+  --color-border-hover: #1A1816;     /* Hover emphasis */
   
   /* Accent Colors - Purposeful highlights */
-  --color-accent: #C47A3D;           /* Warm amber/gold accent */
-  --color-accent-light: #D48A4D;     /* Lighter amber variant */
+  --color-accent: #B8692E;           /* Richer, deeper amber */
+  --color-accent-light: #D48A4D;     /* Lighter variant */
   
   /* Status Colors - Semantic meaning */
-  --color-success: #2D6A4F;          /* Forest green for success */
-  --color-warning: #C47A3D;          /* Amber for warnings */
-  --color-error: #CC3333;            /* Refined red for errors */
-  --color-info: #6B7B8D;             /* Soft blue-gray for info */
+  --color-success: #2D5A45;          /* Deeper forest green */
+  --color-warning: #B8692E;          /* Match accent for cohesion */
+  --color-error: #B83A3A;            /* Refined red */
+  --color-info: #5A6B7D;             /* Sophisticated blue-gray */
   
   /* Shadows - Clean, subtle depth (no glows) */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -73,28 +73,28 @@
    ============================================ */
 .dark {
   /* Background Colors - Deep charcoal with warm undertones */
-  --color-bg-primary: #141210;       /* Deep charcoal */
-  --color-bg-secondary: #1E1B18;     /* Slightly lighter charcoal */
-  --color-surface: #292522;          /* Dark surface for cards */
+  --color-bg-primary: #121010;       /* Deeper charcoal */
+  --color-bg-secondary: #1C1917;     /* Layered depth */
+  --color-surface: #242020;          /* Card surface */
   
   /* Text Colors - Crisp white hierarchy */
-  --color-text-primary: #F5F5F5;     /* Off-white for primary */
-  --color-text-secondary: #C8C4BE;   /* Light gray for secondary */
-  --color-text-muted: #A09A92;       /* Muted gray for hints */
+  --color-text-primary: #F8F6F4;     /* Warm off-white */
+  --color-text-secondary: #D0CCC8;   /* Soft gray */
+  --color-text-muted: #A09A95;       /* Muted warmth */
   
   /* Border Colors - Dark warm grays */
-  --color-border: #332F2C;           /* Dark border */
-  --color-border-hover: #F5F5F5;     /* White on hover */
+  --color-border: #2E2A28;           /* Subtle dark border */
+  --color-border-hover: #F8F6F4;     /* White hover */
   
   /* Accent Colors - Same warmth, adjusted for dark */
-  --color-accent: #D48A4D;           /* Brighter amber for dark mode */
+  --color-accent: #D48A4D;           /* Brighter for dark mode */
   --color-accent-light: #E49A5D;     /* Even lighter variant */
   
   /* Status Colors - Adjusted for dark backgrounds */
-  --color-success: #3D8B65;          /* Brighter green */
+  --color-success: #3D7A5F;          /* Brighter green */
   --color-warning: #D48A4D;          /* Brighter amber */
-  --color-error: #E04040;            /* Brighter red */
-  --color-info: #8B9BAD;             /* Brighter blue-gray */
+  --color-error: #D05050;            /* Brighter red */
+  --color-info: #7A8B9D;             /* Brighter blue-gray */
   
   /* Shadows - Minimal in dark mode */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);

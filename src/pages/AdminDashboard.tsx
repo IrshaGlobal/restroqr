@@ -637,15 +637,15 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            {/* Menu Items List */}
-            <div className="grid gap-3 sm:gap-4">
+            {/* Menu Items List - Horizontal Layout */}
+            <div className="space-y-3">
               {filteredMenuItems.map(item => (
-                <Card key={item.id} className="content-card theme-transition hover:shadow-xl transition-all duration-200 group">
-                  <CardContent className="p-5">
-                    {/* Mobile: Vertical Stack | Desktop: Horizontal Row */}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      {/* Image - Responsive Sizing */}
-                      <div className="w-full sm:w-24 h-32 sm:h-24 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden theme-transition group-hover:scale-105 transition-transform duration-200">
+                <Card key={item.id} className="menu-item-row group hover-lift-premium transition-all duration-200">
+                  <CardContent className="p-4">
+                    {/* Horizontal layout with strong alignment */}
+                    <div className="flex items-start gap-4">
+                      {/* Image - Fixed size */}
+                      <div className="w-20 h-20 rounded-lg bg-muted/50 flex-shrink-0 overflow-hidden theme-transition">
                         {item.image_url ? (
                           <img
                             src={item.image_url}
@@ -659,12 +659,12 @@ export default function AdminDashboard() {
                         )}
                       </div>
                       
-                      {/* Content */}
+                      {/* Content - Flexible width */}
                       <div className="flex-1 min-w-0">
-                        {/* Header: Name + Actions */}
-                        <div className="flex items-start justify-between gap-3">
+                        {/* Header: Name + Price */}
+                        <div className="flex items-start justify-between gap-3 mb-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-base sm:text-lg truncate text-foreground">{item.name}</h3>
+                            <h3 className="font-bold text-lg truncate text-foreground">{item.name}</h3>
                             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                               {item.description}
                             </p>
@@ -676,51 +676,57 @@ export default function AdminDashboard() {
                             )}
                           </div>
                           
-                          {/* Action Buttons - Larger Touch Targets */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => openEditDialog(item)}
-                              className="h-10 w-10 p-0 theme-transition hover:scale-110 active:scale-95 hover:bg-primary/10 rounded-lg"
-                              aria-label="Edit item"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => deleteMenuItem(item.id)}
-                              className="h-10 w-10 p-0 theme-transition hover:scale-110 active:scale-95 hover:bg-destructive/10 rounded-xl"
-                              aria-label="Delete item"
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
+                          {/* Price */}
+                          <div className="flex-shrink-0">
+                            <span className="font-bold text-xl text-primary font-mono-data">
+                              {formatCurrency(item.price)}
+                            </span>
                           </div>
                         </div>
                         
-                        {/* Footer: Price + Controls */}
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-                          <div className="flex items-center gap-3 sm:gap-4 text-sm text-muted-foreground">
-                            <span className="font-bold text-primary text-base text-foreground">
-                              {formatCurrency(item.price)}
-                            </span>
+                        {/* Footer: Prep Time + Actions */}
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {item.prep_time} min
                             </span>
                           </div>
                           
-                          {/* Availability Switch - Larger Hit Area */}
+                          {/* Action Buttons - Hover reveal on desktop */}
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground hidden sm:inline theme-transition">
-                              {item.is_available ? 'Available' : 'Unavailable'}
-                            </span>
-                            <Switch
-                              checked={item.is_available}
-                              onCheckedChange={() => toggleItemAvailability(item.id, item.is_available)}
-                              className="scale-110 theme-transition"
-                            />
+                            <div className="hidden sm:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openEditDialog(item)}
+                                className="h-9 w-9 p-0 hover:bg-muted rounded-lg"
+                                aria-label="Edit item"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteMenuItem(item.id)}
+                                className="h-9 w-9 p-0 hover:bg-destructive/10 rounded-lg"
+                                aria-label="Delete item"
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                            
+                            {/* Availability Switch - Always visible */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground hidden sm:inline theme-transition">
+                                {item.is_available ? 'Available' : 'Unavailable'}
+                              </span>
+                              <Switch
+                                checked={item.is_available}
+                                onCheckedChange={() => toggleItemAvailability(item.id, item.is_available)}
+                                className="scale-110 theme-transition"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -756,18 +762,18 @@ export default function AdminDashboard() {
               </div>
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 {selectedTables.size > 0 && (
-                  <Button variant="outline" onClick={() => setSelectedTables(new Set())} className="flex-1 sm:flex-none theme-transition hover:scale-105 active:scale-95">
+                  <Button variant="outline" onClick={() => setSelectedTables(new Set())} className="flex-1 sm:flex-none">
                     Clear Selection ({selectedTables.size})
                   </Button>
                 )}
-                <Button onClick={generateBatchQRs} disabled={tables.length === 0} className="flex-1 sm:flex-none theme-transition hover:scale-105 active:scale-95">
+                <Button onClick={generateBatchQRs} disabled={tables.length === 0} className="flex-1 sm:flex-none">
                   <Download className="w-4 h-4 mr-2" />
                   Batch QR Codes
                 </Button>
                 <Button onClick={() => {
                   const num = prompt('Enter table number:')
                   if (num) addTable(parseInt(num))
-                }} className="flex-1 sm:flex-none theme-transition hover:scale-105 active:scale-95">
+                }} className="flex-1 sm:flex-none">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Table
                 </Button>
@@ -780,7 +786,7 @@ export default function AdminDashboard() {
                 const isExpanded = selectedTable?.id === table.id
                 
                 return (
-                  <Card key={table.id} className={`${isExpanded ? 'border-primary/50 shadow-xl' : ''} ${isSelected ? 'bg-gradient-to-br from-primary/10 to-accent/10' : ''} theme-transition hover:shadow-xl transition-all duration-200 glass-card group rounded-lg`}>
+                  <Card key={table.id} className={`${isExpanded ? 'border-primary/50 shadow-xl' : ''} ${isSelected ? 'bg-gradient-to-br from-primary/10 to-accent/10' : ''} glass-card rounded-lg`}>
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -800,7 +806,7 @@ export default function AdminDashboard() {
                                 setSelectedTables(new Set([...selectedTables, table.id]))
                               }
                             }}
-                            className="h-9 w-9 p-0 theme-transition hover:scale-110 active:scale-95 hover:bg-primary/10 rounded-lg"
+                            className="h-9 w-9 p-0 hover:bg-primary/10 rounded-lg"
                             aria-label="Select table"
                           >
                             <CheckSquare className="w-4 h-4" />
@@ -812,7 +818,7 @@ export default function AdminDashboard() {
                               setEditingTableId(table.id)
                               setEditingTableNumber(table.table_number)
                             }}
-                            className="h-9 w-9 p-0 theme-transition hover:scale-110 active:scale-95 hover:bg-primary/10 rounded-lg"
+                            className="h-9 w-9 p-0 hover:bg-primary/10 rounded-lg"
                             aria-label="Edit table"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -821,7 +827,7 @@ export default function AdminDashboard() {
                             size="sm"
                             variant="ghost"
                             onClick={() => setDeletingTableId(table.id)}
-                            className="h-9 w-9 p-0 theme-transition hover:scale-110 active:scale-95 hover:bg-destructive/10 rounded-xl"
+                            className="h-9 w-9 p-0 hover:bg-destructive/10 rounded-xl"
                             aria-label="Delete table"
                           >
                             <Trash2 className="w-4 h-4 text-destructive" />
@@ -830,7 +836,7 @@ export default function AdminDashboard() {
                       </div>
                       
                       <Button
-                        className="w-full theme-transition hover:scale-[1.01] active:scale-[0.99] rounded-lg shadow-md hover:shadow-lg"
+                        className="w-full rounded-lg shadow-md"
                         variant={isExpanded ? "default" : "outline"}
                         onClick={() => setSelectedTable(isExpanded ? null : table)}
                       >
@@ -968,7 +974,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background" style={{ backgroundImage: 'var(--gradient-mesh)', backgroundAttachment: 'fixed' }}>
+    <div className="min-h-screen bg-background">
       {/* Sidebar - Desktop Only */}
       <div className="hidden lg:block">
         <AdminSidebar
@@ -981,8 +987,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content Area */}
-      <div className={`flex flex-col min-h-screen pb-16 lg:pb-0 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-        isSidebarCollapsed ? 'lg:pl-[5.5rem]' : 'lg:pl-[18rem]'
+      <div className={`flex flex-col min-h-screen pb-16 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+        isSidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'
       }`}>
         {/* Header */}
         <AdminHeader
@@ -990,10 +996,11 @@ export default function AdminDashboard() {
           onToggleStatus={toggleRestaurantStatus}
           pageTitle={activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace('-', ' ')}
           onLogout={handleLogout}
+          isSidebarCollapsed={isSidebarCollapsed}
         />
 
         {/* Content */}
-        <main className="flex-1 pt-28 lg:pt-32 px-4 sm:px-6 lg:px-8 xl:px-10 pb-10">
+        <main className="flex-1 pt-16 px-4 sm:px-6 lg:px-8 xl:px-10 pb-10">
           {renderContent()}
         </main>
       </div>

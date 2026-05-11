@@ -187,6 +187,16 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
     setExpandedOrders(newExpanded)
   }
 
+  const getStatusBorderColor = (status: string) => {
+    switch(status) {
+      case 'new': return 'border-l-info'
+      case 'preparing': return 'border-l-warning'
+      case 'ready': return 'border-l-success'
+      case 'delivered': return 'border-l-muted-foreground'
+      default: return 'border-l-border'
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'new':
@@ -251,47 +261,47 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
-        <Card className="glass-card rounded-lg">
+      {/* Stats Cards - Premium Layout */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 stagger-children">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+            <p className="text-2xl font-bold text-foreground font-mono-data">{stats.total}</p>
             <p className="text-xs text-muted-foreground mt-1.5">Total Orders</p>
           </CardContent>
         </Card>
-        <Card className="glass-card rounded-lg">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-warning">{stats.newOrders}</p>
+            <p className="text-2xl font-bold text-warning font-mono-data">{stats.newOrders}</p>
             <p className="text-xs text-muted-foreground mt-1.5">New</p>
           </CardContent>
         </Card>
-        <Card className="glass-card rounded-lg">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-info">{stats.preparing}</p>
+            <p className="text-2xl font-bold text-info font-mono-data">{stats.preparing}</p>
             <p className="text-xs text-muted-foreground mt-1.5">Preparing</p>
           </CardContent>
         </Card>
-        <Card className="glass-card rounded-lg">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-success">{stats.ready}</p>
+            <p className="text-2xl font-bold text-success font-mono-data">{stats.ready}</p>
             <p className="text-xs text-muted-foreground mt-1.5">Ready</p>
           </CardContent>
         </Card>
-        <Card className="glass-card rounded-lg">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-muted-foreground">{stats.delivered}</p>
+            <p className="text-2xl font-bold text-muted-foreground font-mono-data">{stats.delivered}</p>
             <p className="text-xs text-muted-foreground mt-1.5">Delivered</p>
           </CardContent>
         </Card>
-        <Card className="glass-card rounded-lg">
+        <Card className="glass-card rounded-lg hover-lift-premium">
           <CardContent className="p-5 text-center">
-            <p className="text-2xl font-bold text-foreground">{formatCurrency(stats.revenue)}</p>
+            <p className="text-2xl font-bold text-foreground font-mono-data">{formatCurrency(stats.revenue)}</p>
             <p className="text-xs text-muted-foreground mt-1.5">Revenue</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Filters - Refined */}
       <Card className="glass-card">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -304,7 +314,7 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
                   placeholder="Order #, table, notes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 h-10"
                 />
               </div>
             </div>
@@ -313,7 +323,7 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
               <Label htmlFor="status">Status</Label>
               <select
                 id="status"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 h-10"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -329,7 +339,7 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
               <Label htmlFor="date">Date Range</Label>
               <select
                 id="date"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1 h-10"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
               >
@@ -371,7 +381,7 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
             const orderTotal = getOrderTotal(order)
 
             return (
-              <Card key={order.id} className={isExpanded ? 'border-primary' : ''}>
+              <Card key={order.id} className={`${getStatusBorderColor(order.status)} border-l-4 hover-lift-premium transition-all duration-200`}>
                 <CardContent className="p-4">
                   {/* Order Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
@@ -381,7 +391,7 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
                         {getStatusBadge(order.status)}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold truncate">{order.order_number}</p>
+                        <p className="font-bold truncate font-mono-data">{order.order_number}</p>
                         <p className="text-xs text-muted-foreground truncate">
                           Table {order.tables?.table_number || 'N/A'}
                         </p>
@@ -389,14 +399,14 @@ export default function OrderManager({ restaurantId }: OrderManagerProps) {
                     </div>
                     
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-lg font-bold text-primary">
+                      <span className="text-lg font-bold text-primary font-mono-data">
                         {formatCurrency(orderTotal)}
                       </span>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => toggleOrderExpansion(order.id)}
-                        className="h-9 w-9 p-0"
+                        className="h-9 w-9 p-0 hover:bg-muted rounded-lg"
                         aria-label="Toggle order details"
                       >
                         {isExpanded ? (

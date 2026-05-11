@@ -110,6 +110,18 @@ const config: Config = {
           "0%": { transform: "scale(0)", opacity: "0.5" },
           "100%": { transform: "scale(4)", opacity: "0" },
         },
+        "fade-in-up": {
+          from: { transform: "translateY(20px)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
+        "slide-in-left": {
+          from: { transform: "translateX(-20px)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
+        "scale-in": {
+          from: { transform: "scale(0.95)", opacity: "0" },
+          to: { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -122,6 +134,9 @@ const config: Config = {
         "shimmer": "shimmer 1.5s infinite",
         "zoom-in": "zoom-in 0.2s ease-out",
         "ripple": "ripple 0.6s ease-out",
+        "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "slide-in-left": "slide-in-left 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "scale-in": "scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
       },
       boxShadow: {
         'elegant': 'var(--shadow-elegant)',

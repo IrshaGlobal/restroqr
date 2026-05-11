@@ -60,9 +60,9 @@ export default function MobileBottomNav({
 
   return (
     <>
-      {/* Bottom Navigation Bar - Mobile Only */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 glass-premium border-t border-white/30 lg:hidden safe-area-bottom theme-transition shadow-xl backdrop-blur-md">
-        <div className="flex items-center justify-around px-2 py-2">
+      {/* Bottom Navigation Bar - Mobile Only - COMPACT */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border lg:hidden safe-area-bottom theme-transition">
+        <div className="flex items-center justify-around px-2 py-1.5">
           {primaryTabs.map((tab) => {
             const active = isActive(tab.id)
             const showBadge = tab.id === 'orders' && newOrdersCount > 0
@@ -71,14 +71,14 @@ export default function MobileBottomNav({
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex flex-col items-center justify-center min-w-[64px] min-h-[56px] px-2 py-1 transition-all duration-200 active:scale-95 ${
+                className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] px-2 py-1 transition-all duration-200 active:scale-95 ${
                   active ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
                 <div className="relative">
                   {tab.icon}
                   {showBadge && (
-                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg">
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                       {newOrdersCount > 9 ? '9+' : newOrdersCount}
                     </span>
                   )}
@@ -87,7 +87,7 @@ export default function MobileBottomNav({
                   {tab.label}
                 </span>
                 {active && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-primary rounded-full" />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
                 )}
               </button>
             )
@@ -96,7 +96,7 @@ export default function MobileBottomNav({
           {/* More Menu Button */}
           <button
             onClick={() => setShowMoreMenu(!showMoreMenu)}
-            className={`flex flex-col items-center justify-center min-w-[64px] min-h-[56px] px-2 py-1 transition-all duration-200 active:scale-95 ${
+            className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] px-2 py-1 transition-all duration-200 active:scale-95 ${
               secondaryTabs.some(tab => isActive(tab.id)) ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
@@ -115,24 +115,24 @@ export default function MobileBottomNav({
             onClick={() => setShowMoreMenu(false)}
           />
           
-          {/* More Menu Card - Slides up from bottom */}
-          <Card className="fixed bottom-0 left-0 right-0 z-50 lg:hidden animate-slide-up theme-transition glass-premium rounded-t-lg">
+          {/* More Menu Card - Slides up from bottom - GRID LAYOUT */}
+          <Card className="fixed bottom-0 left-0 right-0 z-50 lg:hidden animate-slide-up theme-transition bg-card rounded-t-lg">
             <CardContent className="p-0">
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 theme-transition">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border theme-transition">
                 <h3 className="text-sm font-bold text-foreground">More Options</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowMoreMenu(false)}
-                  className="h-8 w-8 p-0 hover:bg-primary/10 rounded-lg"
+                  className="h-8 w-8 p-0 hover:bg-muted rounded-lg"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
 
-              {/* Menu Items */}
-              <div className="py-2">
+              {/* Menu Items - Grid Layout */}
+              <div className="grid grid-cols-2 gap-2 p-3">
                 {secondaryTabs.map((tab) => {
                   const active = isActive(tab.id)
                   
@@ -140,18 +140,18 @@ export default function MobileBottomNav({
                     <button
                       key={tab.id}
                       onClick={() => handleTabClick(tab.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 theme-transition rounded-lg mx-2 ${
-                        active ? 'bg-gradient-to-r from-primary/15 to-accent/15' : 'hover:bg-primary/10'
+                      className={`flex flex-col items-center gap-2 p-4 transition-all duration-200 theme-transition rounded-lg ${
+                        active ? 'bg-muted/70' : 'hover:bg-muted/50'
                       }`}
                     >
                       <span className={active ? 'text-primary' : 'text-muted-foreground'}>
                         {tab.icon}
                       </span>
-                      <span className={`text-sm font-medium ${active ? 'text-primary font-semibold' : 'text-foreground'}`}>
+                      <span className={`text-xs font-medium ${active ? 'text-primary font-semibold' : 'text-foreground'}`}>
                         {tab.label}
                       </span>
                       {active && (
-                        <div className="ml-auto w-2 h-2 rounded-full bg-gradient-primary" />
+                        <div className="w-1 h-1 rounded-full bg-primary mt-1" />
                       )}
                     </button>
                   )

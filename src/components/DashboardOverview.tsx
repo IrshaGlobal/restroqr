@@ -138,78 +138,77 @@ export default function DashboardOverview({
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-enter">
-      {/* Key Metrics Cards - LUMINOUS CRYSTAL */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Total Orders Today */}
-        <Card className="metric-card group">
-          <CardContent className="p-4 sm:p-6">
+      {/* Key Metrics Cards - ASYMMETRIC LAYOUT */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 stagger-children">
+        {/* Total Orders Today - Premium Large Card */}
+        <Card className="lg:col-span-4 metric-card-premium hover-lift-premium">
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">Orders Today</p>
-                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground">{todayStats.orders}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2">Orders Today</p>
+                <p className="text-3xl sm:text-4xl font-bold truncate text-foreground font-mono-data">{todayStats.orders}</p>
                 <div className="flex items-center gap-1 mt-2 text-xs text-success">
                   <TrendingUp className="w-3 h-3" />
-                  <span>Live</span>
+                  <span>Live Updates</span>
                 </div>
               </div>
-              <div className="metric-card-icon bg-gradient-to-br from-info/20 to-info/10 flex-shrink-0 ml-3 group-hover:scale-110 transition-transform duration-200">
-                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-info" />
+              <div className="metric-card-icon bg-gradient-to-br from-info/20 to-info/10 flex-shrink-0 ml-3">
+                <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 text-info" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Revenue Today */}
-        <Card className="metric-card group">
-          <CardContent className="p-4 sm:p-6">
+        {/* Revenue Today - Premium Large Card */}
+        <Card className="lg:col-span-4 metric-card-premium hover-lift-premium">
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">Revenue Today</p>
-                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground">{formatCurrency(todayStats.revenue)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2">Revenue Today</p>
+                <p className="text-3xl sm:text-4xl font-bold truncate text-foreground font-mono-data">{formatCurrency(todayStats.revenue)}</p>
                 <div className="flex items-center gap-1 mt-2 text-xs text-success">
                   <TrendingUp className="w-3 h-3" />
                   <span>Real-time</span>
                 </div>
               </div>
-              <div className="metric-card-icon bg-gradient-to-br from-success/20 to-success/10 flex-shrink-0 ml-3 group-hover:scale-110 transition-transform duration-200">
-                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-success" />
+              <div className="metric-card-icon bg-gradient-to-br from-success/20 to-success/10 flex-shrink-0 ml-3">
+                <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-success" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Active Tables */}
-        <Card className="metric-card group">
-          <CardContent className="p-4 sm:p-6">
+        {/* Active Tables - Standard Card */}
+        <Card className="lg:col-span-2 metric-card hover-lift-premium">
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Tables</p>
-                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground">{tablesCount}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2">Tables</p>
+                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground font-mono-data">{tablesCount}</p>
                 <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                  <Users className="w-3 h-3" />
                   <span>{categoriesCount} categories</span>
                 </div>
               </div>
-              <div className="metric-card-icon bg-gradient-to-br from-primary/20 to-primary/10 flex-shrink-0 ml-3 group-hover:scale-110 transition-transform duration-200">
+              <div className="metric-card-icon bg-gradient-to-br from-primary/20 to-primary/10 flex-shrink-0 ml-3">
                 <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Average Order Value */}
-        <Card className="metric-card group">
-          <CardContent className="p-4 sm:p-6">
+        {/* Average Order Value - Standard Card */}
+        <Card className="lg:col-span-2 metric-card hover-lift-premium">
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">Avg Order Value</p>
-                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground">{formatCurrency(todayStats.avgOrderValue)}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2">Avg Order</p>
+                <p className="text-2xl sm:text-3xl font-bold truncate text-foreground font-mono-data">{formatCurrency(todayStats.avgOrderValue)}</p>
                 <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                   <UtensilsCrossed className="w-3 h-3" />
                   <span>{menuItemsCount} items</span>
                 </div>
               </div>
-              <div className="metric-card-icon bg-gradient-to-br from-warning/20 to-warning/10 flex-shrink-0 ml-3 group-hover:scale-110 transition-transform duration-200">
+              <div className="metric-card-icon bg-gradient-to-br from-warning/20 to-warning/10 flex-shrink-0 ml-3">
                 <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-warning" />
               </div>
             </div>
@@ -221,8 +220,8 @@ export default function DashboardOverview({
       <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Left Column - Recent Orders & Quick Actions */}
         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-          {/* Recent Orders */}
-          <Card className="content-card theme-transition">
+          {/* Recent Orders - Editorial Style */}
+          <Card className="content-card">
             <CardHeader className="px-6 py-5">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-semibold text-foreground">Recent Orders</CardTitle>
@@ -230,7 +229,7 @@ export default function DashboardOverview({
                   variant="ghost" 
                   size="sm"
                   onClick={() => onViewSection('orders')}
-                  className="text-sm h-9 hover:bg-primary/10 rounded-lg"
+                  className="text-sm h-9 hover:bg-muted rounded-lg"
                 >
                   View All
                 </Button>
@@ -249,25 +248,23 @@ export default function DashboardOverview({
                   {recentOrders.slice(0, 5).map((order) => (
                     <div 
                       key={order.id}
-                      className="flex items-center justify-between p-4 rounded-lg glass-card hover:bg-primary/5 transition-all duration-200 theme-transition group"
+                      className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-200 group cursor-pointer border-l-[3px] border-l-transparent hover:border-l-primary"
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
-                          <span className="font-bold text-primary text-sm">
+                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center flex-shrink-0">
+                          <span className="font-bold text-primary text-sm font-mono-data">
                             {order.order_number}
                           </span>
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            Table {order.tables?.table_number || 'N/A'}
-                          </p>
+                          <p className="font-medium text-sm truncate">Table {order.tables?.table_number || 'N/A'}</p>
                           <p className="text-xs text-muted-foreground truncate">
                             {formatTime(order.created_at)}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0 ml-3">
-                        <span className="font-semibold text-sm hidden sm:inline">
+                        <span className="font-semibold text-sm hidden sm:inline font-mono-data">
                           {formatCurrency(order.total)}
                         </span>
                         <Badge 
@@ -284,44 +281,44 @@ export default function DashboardOverview({
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
-          <Card className="content-card theme-transition">
+          {/* Quick Actions - Bento Grid */}
+          <Card className="content-card">
             <CardHeader className="px-6 py-5">
               <CardTitle className="text-lg font-semibold text-foreground">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="px-6 pb-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <Button 
                   variant="outline" 
-                  className="h-auto py-5 flex flex-col gap-2 theme-transition hover:scale-[1.02] active:scale-[0.98] glass-card hover:bg-primary/10 rounded-lg shadow-md hover:shadow-lg"
+                  className="h-auto py-5 flex flex-col gap-2 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   onClick={() => onViewSection('menu-items')}
                 >
                   <Plus className="w-5 h-5" />
-                  <span className="text-xs">Add Menu Item</span>
+                  <span className="text-xs font-medium">Add Menu Item</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="h-auto py-5 flex flex-col gap-2 theme-transition hover:scale-[1.02] active:scale-[0.98] glass-card hover:bg-primary/10 rounded-lg shadow-md hover:shadow-lg"
+                  className="h-auto py-5 flex flex-col gap-2 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   onClick={() => onViewSection('tables')}
                 >
                   <LayoutGrid className="w-5 h-5" />
-                  <span className="text-xs">Add Table</span>
+                  <span className="text-xs font-medium">Add Table</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="h-auto py-5 flex flex-col gap-2 theme-transition hover:scale-[1.02] active:scale-[0.98] glass-card hover:bg-primary/10 rounded-lg shadow-md hover:shadow-lg"
+                  className="h-auto py-5 flex flex-col gap-2 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   onClick={() => onViewSection('analytics')}
                 >
                   <BarChart3 className="w-5 h-5" />
-                  <span className="text-xs">View Analytics</span>
+                  <span className="text-xs font-medium">View Analytics</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="h-auto py-5 flex flex-col gap-2 theme-transition hover:scale-[1.02] active:scale-[0.98] glass-card hover:bg-primary/10 rounded-lg shadow-md hover:shadow-lg"
+                  className="h-auto py-5 flex flex-col gap-2 hover:bg-muted/50 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   onClick={() => onViewSection('staff')}
                 >
                   <Users className="w-5 h-5" />
-                  <span className="text-xs">Manage Staff</span>
+                  <span className="text-xs font-medium">Manage Staff</span>
                 </Button>
               </div>
             </CardContent>
@@ -331,7 +328,7 @@ export default function DashboardOverview({
         {/* Right Column - Restaurant Status & Stats */}
         <div className="space-y-6 sm:space-y-8">
           {/* Restaurant Status Card */}
-          <Card className="content-card theme-transition">
+          <Card className="content-card">
             <CardHeader className="px-6 py-5">
               <CardTitle className="text-lg font-semibold text-foreground">Restaurant Status</CardTitle>
             </CardHeader>
@@ -361,21 +358,21 @@ export default function DashboardOverview({
                 <div className="space-y-2">
                   <div className="quick-stat">
                     <span className="text-sm text-muted-foreground">Menu Items</span>
-                    <span className="font-semibold">{menuItemsCount}</span>
+                    <span className="font-semibold font-mono-data">{menuItemsCount}</span>
                   </div>
                   <div className="quick-stat">
                     <span className="text-sm text-muted-foreground">Available</span>
-                    <span className="font-semibold text-success">
+                    <span className="font-semibold text-success font-mono-data">
                       {menuItemsCount} {/* Would need filtering logic */}
                     </span>
                   </div>
                   <div className="quick-stat">
                     <span className="text-sm text-muted-foreground">Tables</span>
-                    <span className="font-semibold">{tablesCount}</span>
+                    <span className="font-semibold font-mono-data">{tablesCount}</span>
                   </div>
                   <div className="quick-stat">
                     <span className="text-sm text-muted-foreground">Categories</span>
-                    <span className="font-semibold">{categoriesCount}</span>
+                    <span className="font-semibold font-mono-data">{categoriesCount}</span>
                   </div>
                 </div>
               </div>
@@ -383,7 +380,7 @@ export default function DashboardOverview({
           </Card>
 
           {/* Filter Configuration Preview */}
-          <Card className="content-card theme-transition">
+          <Card className="content-card">
             <CardHeader>
               <CardTitle className="text-lg font-semibold gradient-text-premium">Customer Menu Filters</CardTitle>
             </CardHeader>
